@@ -1,0 +1,402 @@
+/* ========== CSS 변수와 글로벌 스타일 ========== */
+:root {
+  --bg: #fff;
+  --text: #111;
+  --primary: #111;
+  --accent: #333;
+  --gradient: linear-gradient(135deg, #fafafa, #ececec);
+}
+[data-theme="dark"] {
+  --bg: #111;
+  --text: #fafafa;
+  --primary: #fafafa;
+  --accent: #fff;
+  --gradient: linear-gradient(135deg, #292929, #111);
+}
+[data-theme="gradient"] {
+  --bg: linear-gradient(135deg, #f0f0ff, #c9e7ff);
+  --text: #222;
+  --primary: #4a90e2;
+  --accent: #c9e7ff;
+  --gradient: linear-gradient(135deg, #f0f0ff, #c9e7ff);
+}
+
+/* 기본 전체 배경과 폰트, 최소 높이 등 */
+body, html, #root, .edumatrix-root {
+  min-height: 100vh;
+  margin: 0;
+  background: var(--bg, linear-gradient(135deg, #f6f6f6 0%, #e8eaf6 100%));
+  font-family: 'SF Pro Display', 'Segoe UI', 'Apple SD Gothic Neo', 'sans-serif';
+  color: var(--text, #222);
+  transition: background 0.3s, color 0.3s;
+}
+body {
+  background: var(--bg, linear-gradient(135deg, #f6f6f6 0%, #e8eaf6 100%));
+}
+.edumatrix-root {
+  position: relative;
+  min-height: 100vh;
+}
+
+/* ========== 로그인 & 회원가입 ========== */
+.login-root {
+  min-height: 100vh;
+  background: var(--gradient, #f7fafd);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.login-box {
+  background: #fff;
+  border-radius: 2rem;
+  box-shadow: 0 8px 32px rgba(70,80,100,0.08);
+  padding: 2.5rem 2.2rem;
+  min-width: 330px;
+  max-width: 90vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.login-logo {
+  width: 78px;
+  height: 78px;
+  object-fit: contain;
+  border-radius: 18px;
+  margin-bottom: 1.2rem;
+  box-shadow: 0 2px 10px rgba(150,170,200,0.10);
+  background: #fff;
+}
+.login-box h2 {
+  margin: 0 0 1.5rem 0;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  font-size: 1.35rem;
+  color: var(--primary, #222);
+}
+.login-field {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+.login-field label {
+  display: block;
+  font-size: 0.99rem;
+  font-weight: 500;
+  color: #555;
+  margin-bottom: 0.33rem;
+}
+.login-field input {
+  width: 100%;
+  font-size: 1rem;
+  padding: 0.63rem 0.9rem;
+  border-radius: 10px;
+  border: 1px solid #e6e9f0;
+  background: #f7f9fc;
+  color: #222;
+  transition: border 0.18s, background 0.18s;
+}
+.login-field input:focus {
+  outline: none;
+  border: 1.5px solid #4a90e2;
+  background: #f0f6ff;
+}
+.login-error {
+  color: #e04141;
+  font-size: 0.97rem;
+  margin-bottom: 0.7rem;
+  text-align: center;
+}
+.login-btn {
+  width: 100%;
+  background: #4a90e2;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 0.7rem 0;
+  font-weight: 600;
+  font-size: 1.09rem;
+  margin-top: 0.2rem;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(74,144,226,0.07);
+  transition: background 0.18s;
+}
+.login-btn:hover {
+  background: #1763a6;
+}
+.login-footer {
+  margin-top: 1.2rem;
+  font-size: 0.98rem;
+  color: #555;
+}
+.link-btn {
+  background: none;
+  border: none;
+  color: #4a90e2;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+}
+.link-btn:hover {
+  text-decoration: underline;
+}
+
+/* ========== 상단바 ========== */
+.topbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  padding: 0 2rem;
+  background: rgba(255,255,255,0.7);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  z-index: 100;
+  backdrop-filter: blur(12px);
+}
+.sidebar-toggle,
+.chatbot-toggle {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: var(--text, #222);
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.sidebar-toggle:hover,
+.chatbot-toggle:hover {
+  color: #4a90e2;
+}
+.chatbot-toggle {
+  padding: 0.3rem;
+  margin-right: 0.3rem;
+  border-radius: 50%;
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.chatbot-toggle:hover {
+  background: #f0f4fa;
+}
+.chatbot-icon-btn {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  display: block;
+}
+
+/* ========== 좌측 사이드바 ========== */
+.sidebar.left {
+  position: fixed;
+  top: 0;
+  left: -270px;
+  width: 240px;
+  height: 100%;
+  background: #fff;
+  box-shadow: 6px 0 24px rgba(0,0,0,0.06);
+  transition: left 0.3s cubic-bezier(.86,0,.07,1);
+  z-index: 120;
+  display: flex;
+  flex-direction: column;
+  padding-top: 56px;
+  border-radius: 0 2rem 2rem 0;
+}
+.sidebar.left.open {
+  left: 0;
+}
+.sidebar.left .close-btn {
+  align-self: flex-end;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  margin: 1rem;
+  color: #666;
+  cursor: pointer;
+}
+.sidebar.left nav {
+  padding: 1rem 2rem;
+}
+.sidebar.left ul {
+  padding: 0;
+  list-style: none;
+}
+.sidebar.left li {
+  padding: 0.5rem 0;
+  font-size: 1.05rem;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+.sidebar.left li:hover {
+  background: #f2f5fa;
+}
+
+/* ========== 우측 AI챗봇 (스마트폰형 박스) ========== */
+.sidebar.right {
+  position: fixed;
+  top: 0;
+  right: -340px;
+  width: 320px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  transition: right 0.35s cubic-bezier(.86,0,.07,1);
+  z-index: 130;
+  background: none;
+}
+.sidebar.right.open {
+  right: 0;
+}
+.chatbot-box {
+  width: 305px;
+  min-height: 560px;
+  margin: 0 12px;
+  background: #fff;
+  border-radius: 2.2rem;
+  box-shadow: 0 8px 36px rgba(60,60,80,0.13);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  border: 1.5px solid #e8eaf6;
+}
+.chatbot-header {
+  text-align: center;
+  font-size: 1.08rem;
+  padding: 1.4rem 0 1rem 0;
+  border-bottom: 1px solid #f1f3fa;
+  font-weight: bold;
+  background: #f9fafe;
+  letter-spacing: 0.02em;
+}
+.chatbot-content {
+  flex: 1;
+  padding: 1.3rem;
+  overflow-y: auto;
+  background: #f6f8fa;
+  font-size: 1.03rem;
+}
+.chatbot-input-wrap {
+  display: flex;
+  border-top: 1px solid #e8eaf6;
+  background: #fafbff;
+  padding: 0.7rem 1rem;
+}
+.chatbot-input {
+  flex: 1;
+  border: none;
+  font-size: 1.07rem;
+  padding: 0.45rem 0.8rem;
+  border-radius: 12px;
+  background: #f2f4f7;
+  outline: none;
+  margin-right: 0.7rem;
+  color: #222;
+}
+.chatbot-send {
+  background: #4a90e2;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 0.47rem 1.2rem;
+  font-weight: 600;
+  font-size: 1.06rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.chatbot-send:hover {
+  background: #007aff;
+}
+.sidebar.right .close-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: #888;
+  cursor: pointer;
+  z-index: 1;
+}
+.message.bot {
+  background: #f2f5fa;
+  padding: 0.4em 1em;
+  border-radius: 16px;
+  max-width: 80%;
+  margin-bottom: 0.4em;
+  display: inline-block;
+}
+.message.user {
+  background: #e8f2ff;
+  color: #1763a6;
+  padding: 0.4em 1em;
+  border-radius: 16px;
+  max-width: 80%;
+  margin-bottom: 0.4em;
+  display: inline-block;
+  margin-left: auto;
+}
+
+/* ========== 중앙 로고 및 인삿말 ========== */
+.main-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+.center-logo {
+  width: 132px;
+  height: 132px;
+  object-fit: contain;
+  border-radius: 28px;
+  box-shadow: 0 4px 22px rgba(140,160,180,0.11);
+  background: #fff;
+  margin-bottom: 2.5rem;
+  margin-top: 64px;
+}
+.main-greeting {
+  text-align: center;
+}
+.main-greeting h1 {
+  font-size: 2.2rem;
+  margin-bottom: 1.1rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.main-greeting p {
+  font-size: 1.13rem;
+  line-height: 1.8;
+  color: #444;
+}
+
+/* ========== 반응형 (모바일 UI도 예쁘게) ========== */
+@media (max-width: 700px) {
+  .chatbot-box {
+    min-height: 480px;
+    width: 96vw;
+    margin: 0 1vw;
+  }
+  .sidebar.right {
+    width: 100vw;
+    right: -100vw;
+  }
+  .sidebar.right.open {
+    right: 0;
+  }
+  .main-content {
+    min-height: 75vh;
+  }
+  .login-box {
+    min-width: unset;
+    width: 99vw;
+    padding: 1.7rem 0.8rem;
+  }
+}
