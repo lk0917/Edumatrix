@@ -281,6 +281,388 @@ body {
   color: #444;
 }
 
+/* ========== 로그인/회원가입 공통 레이아웃 ========== */
+.login-root {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #e8f0ff 0%, #dbefff 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-box {
+  background: #fff;
+  border-radius: 2rem;
+  box-shadow: 0 8px 32px rgba(70, 80, 100, 0.11);
+  padding: 2.5rem 2.2rem 2.2rem 2.2rem;
+  min-width: 340px;
+  max-width: 90vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: fadeIn 0.7s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(40px);}
+  to { opacity: 1; transform: none;}
+}
+
+.login-logo {
+  width: 76px;
+  height: 76px;
+  object-fit: contain;
+  border-radius: 20px;
+  margin-bottom: 1.3rem;
+  box-shadow: 0 2px 10px rgba(150,170,200,0.11);
+  background: #fff;
+}
+
+.login-box h2 {
+  margin: 0 0 1.6rem 0;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  font-size: 1.36rem;
+  color: #3177d7;
+  text-align: center;
+}
+
+.login-field {
+  width: 100%;
+  margin-bottom: 1.15rem;
+}
+
+.login-field label {
+  display: block;
+  font-size: 1.02rem;
+  font-weight: 500;
+  color: #353c48;
+  margin-bottom: 0.33rem;
+}
+
+.login-field input {
+  width: 100%;
+  font-size: 1rem;
+  padding: 0.62rem 0.9rem;
+  border-radius: 12px;
+  border: 1.2px solid #e6eaf5;
+  background: #f7fafd;
+  color: #222;
+  transition: border 0.17s, background 0.17s;
+  box-sizing: border-box;
+}
+.login-field input:focus {
+  outline: none;
+  border: 1.5px solid #4a90e2;
+  background: #f0f6ff;
+}
+
+.login-error {
+  color: #e04141;
+  font-size: 0.98rem;
+  margin-bottom: 0.8rem;
+  text-align: center;
+}
+
+.login-btn {
+  width: 100%;
+  background: #4a90e2;
+  color: #fff;
+  border: none;
+  border-radius: 11px;
+  padding: 0.74rem 0;
+  font-weight: 700;
+  font-size: 1.12rem;
+  margin-top: 0.18rem;
+  margin-bottom: 0.2rem;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(74,144,226,0.08);
+  transition: background 0.17s;
+}
+.login-btn:hover {
+  background: #2467b4;
+}
+
+.login-footer {
+  margin-top: 1.3rem;
+  font-size: 1.01rem;
+  color: #555;
+  text-align: center;
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  color: #4a90e2;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 0.2em;
+  text-decoration: underline;
+  font-size: 1.02rem;
+}
+.link-btn:hover {
+  text-decoration: underline;
+  color: #205c9b;
+}
+
+/* ========== 반응형 ========== */
+@media (max-width: 500px) {
+  .login-box {
+    min-width: unset;
+    width: 99vw;
+    padding: 1.7rem 0.8rem;
+  }
+  .login-logo {
+    width: 60px;
+    height: 60px;
+  }
+}
+
+/* ========== 분야/레벨 선택 SelectField ========== */
+.select-root {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 50vh;
+  justify-content: center;
+  margin-top: 4.5rem;
+}
+
+.select-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 2.5rem;
+  color: #21242a;
+}
+
+.field-btn-group {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 2.7rem;
+}
+
+.field-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 185px;
+  height: 190px;
+  background: #fff;
+  border-radius: 2rem;
+  box-shadow: 0 4px 16px rgba(60, 60, 80, 0.09);
+  border: none;
+  font-size: 1.45rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: box-shadow 0.18s, background 0.16s;
+  justify-content: center;
+}
+.field-btn .emoji {
+  font-size: 3.5rem;
+  margin-bottom: 0.8rem;
+}
+.field-btn:hover {
+  background: linear-gradient(135deg, #eaf6ff 60%, #e2e6f7 100%);
+  box-shadow: 0 8px 26px rgba(74, 144, 226, 0.11);
+}
+
+.level-btn-group {
+  display: flex;
+  gap: 1.25rem;
+  margin-top: 2.5rem;
+}
+.level-btn {
+  padding: 1.15rem 1.9rem;
+  font-size: 1.11rem;
+  font-weight: 600;
+  border-radius: 1.2rem;
+  border: none;
+  background: linear-gradient(135deg, #d2ebff 0%, #b3d5f9 100%);
+  color: #226;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(100,150,240,0.09);
+  transition: background 0.18s, box-shadow 0.18s;
+}
+.level-btn:hover {
+  background: linear-gradient(135deg, #79c3ff 0%, #a6cbfa 100%);
+  color: #0e3055;
+}
+
+
+/* ========== 레벨 테스트 페이지 ========== */
+
+.leveltest-root {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #e8f0ff 0%, #dbefff 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.leveltest-box {
+  background: #fff;
+  border-radius: 1.7rem;
+  box-shadow: 0 8px 32px rgba(70, 80, 100, 0.10);
+  padding: 2.2rem 2.3rem 2.1rem 2.3rem;
+  min-width: 340px;
+  max-width: 92vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: fadeIn 0.6s;
+}
+.leveltest-title {
+  font-size: 1.13rem;
+  font-weight: 700;
+  color: #3165a7;
+  margin-left: 0.5rem;
+}
+.leveltest-back {
+  background: none;
+  border: none;
+  font-size: 1.35rem;
+  color: #8fa4c4;
+  cursor: pointer;
+  position: absolute;
+  left: 18px;
+  top: 18px;
+}
+.leveltest-q {
+  margin: 1.2rem 0 0.8rem 0;
+  font-size: 1.11rem;
+  font-weight: 500;
+  color: #272f41;
+  text-align: left;
+}
+.leveltest-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  margin-bottom: 1rem;
+}
+.leveltest-opt-btn {
+  padding: 0.62rem 0.8rem;
+  border-radius: 10px;
+  border: 1.2px solid #dde9fa;
+  background: #f7fafd;
+  color: #314869;
+  font-size: 1.06rem;
+  cursor: pointer;
+  transition: background 0.14s, border 0.13s;
+  text-align: left;
+}
+.leveltest-opt-btn.selected, .leveltest-opt-btn:hover {
+  background: linear-gradient(90deg, #cae4ff 10%, #e2f2ff 100%);
+  border: 1.5px solid #8fbfe8;
+  color: #1358b8;
+  font-weight: 700;
+}
+.leveltest-nav, .leveltest-submit {
+  background: #ecf5ff;
+  border: none;
+  border-radius: 8px;
+  color: #2e5c96;
+  font-size: 1.01rem;
+  font-weight: 600;
+  padding: 0.53rem 1.2rem;
+  cursor: pointer;
+  transition: background 0.14s;
+}
+.leveltest-nav:disabled {
+  background: #e7eaf3;
+  color: #b8c4dd;
+  cursor: default;
+}
+.leveltest-submit {
+  background: linear-gradient(90deg, #82c5ff 10%, #b3e0ff 100%);
+  color: #1562af;
+}
+.leveltest-submit:disabled {
+  background: #e7eaf3;
+  color: #b8c4dd;
+  cursor: default;
+}
+.leveltest-result {
+  text-align: center;
+  padding: 2.2rem 0 1.2rem 0;
+}
+
+@media (max-width: 500px) {
+  .leveltest-box {
+    min-width: unset;
+    width: 98vw;
+    padding: 1.3rem 0.8rem;
+  }
+}
+
+
+/* ========== 추천 학습 페이지 ========== */
+.recommend-root {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #e8f0ff 0%, #dbefff 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.recommend-box {
+  background: #fff;
+  border-radius: 1.8rem;
+  box-shadow: 0 8px 32px rgba(70, 80, 100, 0.10);
+  padding: 2.5rem 2.3rem 2.3rem 2.3rem;
+  min-width: 340px;
+  max-width: 90vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: fadeIn 0.6s;
+}
+.recommend-box h2 {
+  font-weight: 700;
+  font-size: 1.36rem;
+  color: #3177d7;
+  margin-bottom: 1.4rem;
+  text-align: center;
+  letter-spacing: -0.01em;
+}
+.recommend-list {
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  margin-bottom: 1.6rem;
+  list-style: none;
+}
+.recommend-list li {
+  background: linear-gradient(90deg, #e3f3ff 70%, #f8fbff 100%);
+  border-radius: 13px;
+  box-shadow: 0 2px 10px rgba(120,160,200,0.07);
+  color: #2660a7;
+  padding: 0.98rem 1.18rem;
+  margin-bottom: 0.76rem;
+  font-size: 1.09rem;
+  font-weight: 500;
+  transition: box-shadow 0.13s;
+  letter-spacing: -0.01em;
+  border: 1.1px solid #e3ecfb;
+}
+.recommend-list li:last-child {
+  margin-bottom: 0;
+}
+.recommend-list li:hover {
+  box-shadow: 0 4px 20px rgba(74,144,226,0.09);
+  background: linear-gradient(90deg, #bfe1ff 60%, #e3f2fd 100%);
+  color: #1358b8;
+}
+
+@media (max-width: 500px) {
+  .recommend-box {
+    min-width: unset;
+    width: 99vw;
+    padding: 1.3rem 0.7rem;
+  }
+}
+
+
+
 /* ========== 반응형 ========== */
 @media (max-width: 700px) {
   .chatbot-box {
