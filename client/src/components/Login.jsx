@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import logo from "../assets/logo.png";
+import "../index.css"; 
 
 function Login({ onLogin, onSwitchToSignup }) {
   const [email, setEmail] = useState("");

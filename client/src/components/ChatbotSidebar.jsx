@@ -36,8 +36,8 @@ function ChatbotSidebar({ open, onClose }) {
               className={`message ${msg.from}`}
               style={{
                 marginBottom: "0.7rem",
-                textAlign: msg.from === "user" ? "right" : "left",
-                color: msg.from === "user" ? "#1763a6" : "#333"
+                textAlign: msg.from === "user" ? "right" : "left"
+                // 색상 관련 스타일은 CSS 변수에 맡기므로 삭제
               }}
             >
               {msg.text}

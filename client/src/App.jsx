@@ -1,55 +1,86 @@
 import React, { useState, useEffect } from "react";
-import ThemeSelector from "./components/ThemeSelector";
 import SidebarMenu from "./components/SidebarMenu";
 import ChatbotSidebar from "./components/ChatbotSidebar";
-import Login from "./components/Login";     // 로그인
-import Signup from "./components/Signup";   // 회원가입
-import SelectField from "./components/SelectField"; // 분야 선택
-import Recommendation from "./components/Recommendation"; // 학습 추천
-import LevelTest from "./components/LevelTest";           // 레벨 테스트
+import Login from "./components/Login";
+import Signup from "./components/Signup";
+import SelectField from "./components/SelectField";
+import Recommendation from "./components/Recommendation";
+import LevelTest from "./components/LevelTest";
+import Dashboard from "./components/Dashboard";
+import SettingsPage from "./components/SettingsPage"; // ← 반드시 이 부분 유지!
+import LearningRecords from "./components/LearningRecords"; // ← 새로 추가
 import "./index.css";
 import logo from "./assets/logo.png";
+import whiteLogo from "./assets/white logo.png";
 import icon1 from "./assets/icon1.png";
+import backArrow from "./assets/Arrow left.png";
+
+// 기존 SettingsPage 함수 정의는 삭제 또는 주석처리(중복방지)
+// function SettingsPage({ currentTheme, onChangeTheme, onBack, backArrow }) { ... }
+
+// 다크모드 자동 대응 로고 컴포넌트 (import 방식)
+function Logo() {
+  const [theme, setTheme] = React.useState(
+    document.documentElement.getAttribute("data-theme") || "light"
+  );
+  React.useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setTheme(document.documentElement.getAttribute("data-theme"));
+    });
+    observer.observe(document.documentElement, { attributes: true });
+    return () => observer.disconnect();
+  }, []);
+  const logoSrc = theme === "dark" ? whiteLogo : logo;
+  return <img className="center-logo" src={logoSrc} alt="로고" />;
+}
 
 function App() {
-  // 테마 관리
-  const [theme, setTheme] = useState(() => {
-    return localStorage.getItem("edumatrix-theme") || "light";
-  });
+  // 테마 관리 (전역)
+  const [theme, setTheme] = useState(() => localStorage.getItem("edumatrix-theme") || "light");
 
-  // 사이드바 상태
+  // 사이드바, 챗봇바 상태
   const [leftOpen, setLeftOpen] = useState(false);
   const [rightOpen, setRightOpen] = useState(false);
 
-  // 인증/분야/레벨 관련 상태
-  const [authView, setAuthView] = useState(null); // "login", "signup", null
+  // 인증/페이지 전환 상태
+  const [authView, setAuthView] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [fieldSelect, setFieldSelect] = useState(false);
+  const [userField, setUserField] = useState(null);
+  const [userLevel, setUserLevel] = useState(null);
+  const [showRecommend, setShowRecommend] = useState(false);
+  const [showLevelTest, setShowLevelTest] = useState(false);
+  const [showDashboard, setShowDashboard] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+  const [showRecords, setShowRecords] = useState(false); // 학습 기록 추가
 
-  const [fieldSelect, setFieldSelect] = useState(false); // 분야 선택 중
-  const [userField, setUserField] = useState(null);      // 분야 저장
-  const [userLevel, setUserLevel] = useState(null);      // 레벨 저장
+  // 마이페이지용 사용자 정보 (실제 서비스 시 API로 대체)
+  const [userInfo] = useState({
+    username: "testuser",
+    name: "홍길동",
+    email: "testuser@email.com",
+    password: "********"
+  });
 
-  const [showRecommend, setShowRecommend] = useState(false); // 추천화면
-  const [showLevelTest, setShowLevelTest] = useState(false); // 레벨테스트
-
-  // 테마 적용
+  // 테마가 바뀔 때마다 html data-theme 동기화
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem("edumatrix-theme", theme);
   }, [theme]);
 
-  // 로그인 성공 시 분야선택으로
+  // 핸들러 함수들
   const handleLoginSuccess = () => {
     setIsLoggedIn(true);
     setAuthView(null);
-    setFieldSelect(true); // 분야선택 활성화
+    setFieldSelect(true);
     setUserField(null);
     setUserLevel(null);
     setShowRecommend(false);
     setShowLevelTest(false);
+    setShowDashboard(false);
+    setShowSettings(false);
+    setShowRecords(false);
   };
-
-  // 로그아웃
   const handleLogout = () => {
     setIsLoggedIn(false);
     setAuthView(null);
@@ -58,35 +89,96 @@ function App() {
     setUserLevel(null);
     setShowRecommend(false);
     setShowLevelTest(false);
+    setShowDashboard(false);
+    setShowSettings(false);
+    setShowRecords(false);
   };
-
-  // 분야 선택
-  const handleFieldSelected = (field) => {
-    setUserField(field);
-    // 그대로 유지, 레벨은 SelectField 내부에서 선택됨
-  };
-
-  // 레벨 선택 (Beginner, Intermediate, Advance, Test)
+  const handleFieldSelected = (field) => setUserField(field);
   const handleLevelSelected = (field, level) => {
     setUserLevel(level);
     setFieldSelect(false);
-
     if (level === "Test") {
       setShowLevelTest(true);
       setShowRecommend(false);
+      setShowDashboard(false);
+      setShowSettings(false);
+      setShowRecords(false);
     } else {
       setShowRecommend(true);
       setShowLevelTest(false);
+      setShowDashboard(false);
+      setShowSettings(false);
+      setShowRecords(false);
     }
   };
 
-  // 인증(로그인/회원가입) 화면 분기
+  // 뒤로가기 핸들러
+  const handleBackToHome = () => {
+    setFieldSelect(false);
+    setIsLoggedIn(false);
+    setAuthView(null);
+    setShowRecords(false);
+  };
+  const handleBackToSelect = () => {
+    setShowLevelTest(false);
+    setFieldSelect(true);
+    setUserLevel(null);
+    setShowRecords(false);
+  };
+  const handleBackToSelectFromRecommend = () => {
+    setShowRecommend(false);
+    setFieldSelect(true);
+    setUserLevel(null);
+    setShowRecords(false);
+  };
+  const handleBackToRecommend = () => {
+    setShowDashboard(false);
+    setShowRecommend(true);
+    setShowRecords(false);
+  };
+
+  // 사이드바 메뉴 클릭(홈/대시보드/설정 등)
+  const handleSidebarMenuClick = (key) => {
+    if (key === "dashboard") {
+      setShowDashboard(true);
+      setShowRecommend(false);
+      setShowLevelTest(false);
+      setFieldSelect(false);
+      setShowSettings(false);
+      setShowRecords(false);
+    } else if (key === "home") {
+      setShowDashboard(false);
+      setShowRecommend(false);
+      setShowLevelTest(false);
+      setFieldSelect(false);
+      setShowSettings(false);
+      setShowRecords(false);
+      setIsLoggedIn(false);
+      setAuthView(null);
+      setUserField(null);
+      setUserLevel(null);
+    } else if (key === "settings") {
+      setShowSettings(true);
+      setShowDashboard(false);
+      setShowRecommend(false);
+      setShowLevelTest(false);
+      setFieldSelect(false);
+      setShowRecords(false);
+    } else if (key === "records") {
+      setShowRecords(true);
+      setShowDashboard(false);
+      setShowRecommend(false);
+      setShowLevelTest(false);
+      setFieldSelect(false);
+      setShowSettings(false);
+    }
+    setLeftOpen(false);
+  };
+
+  // --- 페이지 분기 렌더링 ---
   if (!isLoggedIn && authView === "login") {
     return (
-      <Login
-        onLogin={handleLoginSuccess}
-        onSwitchToSignup={() => setAuthView("signup")}
-      />
+      <Login onLogin={handleLoginSuccess} onSwitchToSignup={() => setAuthView("signup")} />
     );
   }
   if (!isLoggedIn && authView === "signup") {
@@ -94,29 +186,134 @@ function App() {
       <Signup
         onSignup={handleLoginSuccess}
         onSwitchToLogin={() => setAuthView("login")}
+        onBackToHome={() => setAuthView(null)}
+        backArrow={backArrow}
       />
     );
   }
 
-  // 로그인된 상태에서 분야/레벨 선택
+  // 환경설정(마이페이지+테마) 페이지
+  if (isLoggedIn && showSettings) {
+    return (
+      <SettingsPage
+        userInfo={userInfo}
+        currentTheme={theme}
+        onChangeTheme={setTheme}
+        onBack={() => setShowSettings(false)}
+        backArrow={backArrow}
+      />
+    );
+  }
+
+  // 학습 기록(레코드) 페이지
+  if (isLoggedIn && showRecords) {
+    return (
+      <div className="edumatrix-root">
+        <SidebarMenu
+          open={leftOpen}
+          onClose={() => setLeftOpen(false)}
+          onMenuClick={handleSidebarMenuClick}
+        />
+        <ChatbotSidebar
+          open={rightOpen}
+          onClose={() => setRightOpen(false)}
+        />
+        <header className="topbar">
+          <button className="sidebar-toggle" onClick={() => setLeftOpen(true)}>
+            <span role="img" aria-label="메뉴">☰</span>
+          </button>
+          <button
+            className="back-btn"
+            onClick={() => {
+              setShowRecords(false);
+              setShowDashboard(true); // 뒤로가기 시 대시보드로 이동
+            }}
+            style={{
+              marginLeft: 10,
+              background: "none",
+              border: "none",
+              padding: 0,
+              display: "flex",
+              alignItems: "center"
+            }}
+          >
+            <img
+              src={backArrow}
+              alt="뒤로가기"
+              style={{ width: 28, height: 28, objectFit: "contain" }}
+            />
+          </button>
+          <h2 style={{ margin: 0, fontSize: "1.3rem", color: "var(--sidebar-title)" }}>학습 기록</h2>
+          <div style={{ flex: 1 }} />
+          <button className="chatbot-toggle" onClick={() => setRightOpen(true)}>
+            <img src={icon1} alt="AI 챗봇" className="chatbot-icon-btn" />
+          </button>
+        </header>
+        <main>
+          <LearningRecords
+            onBack={() => {
+              setShowRecords(false);
+              setShowDashboard(true); // 뒤로가기 시 대시보드로 이동
+            }}
+          />
+        </main>
+      </div>
+    );
+  }
+
+  // 분야/레벨 선택
   if (isLoggedIn && fieldSelect) {
     return (
-      <SelectField
-        onFieldSelected={handleFieldSelected}
-        onLevelSelected={handleLevelSelected}
-      />
+      <div className="edumatrix-root">
+        <SidebarMenu
+          open={leftOpen}
+          onClose={() => setLeftOpen(false)}
+          onMenuClick={handleSidebarMenuClick}
+        />
+        <ChatbotSidebar open={rightOpen} onClose={() => setRightOpen(false)} />
+        <header className="topbar">
+          <button className="sidebar-toggle" onClick={() => setLeftOpen(true)}>
+            <span role="img" aria-label="메뉴">☰</span>
+          </button>
+          {/* 뒤로가기 화살표 */}
+          <button
+            className="back-btn"
+            onClick={handleBackToHome}
+            style={{
+              marginLeft: 10,
+              background: "none",
+              border: "none",
+              padding: 0,
+              display: "flex",
+              alignItems: "center"
+            }}
+          >
+            <img
+              src={backArrow}
+              alt="뒤로가기"
+              style={{ width: 28, height: 28, objectFit: "contain" }}
+            />
+          </button>
+          <div style={{ flex: 1 }} />
+          <button className="chatbot-toggle" onClick={() => setRightOpen(true)}>
+            <img src={icon1} alt="AI 챗봇" className="chatbot-icon-btn" />
+          </button>
+        </header>
+        <SelectField
+          onFieldSelected={handleFieldSelected}
+          onLevelSelected={handleLevelSelected}
+        />
+      </div>
     );
   }
 
-  // 레벨테스트(퀴즈) 화면
+  // 레벨테스트(퀴즈)
   if (isLoggedIn && showLevelTest) {
     return (
       <LevelTest
         field={userField}
-        onBack={() => {
-          setShowLevelTest(false);
-          setFieldSelect(true); // 다시 분야/레벨 선택
-        }}
+        onBack={handleBackToSelect}
+        backArrow={backArrow}
         onComplete={(level) => {
           setShowLevelTest(false);
           setUserLevel(level);
@@ -132,25 +329,77 @@ function App() {
       <Recommendation
         field={userField}
         level={userLevel}
-        onBack={() => {
+        onBack={handleBackToSelectFromRecommend}
+        backArrow={backArrow}
+        onNext={() => {
           setShowRecommend(false);
-          setFieldSelect(true);
-          setUserLevel(null);
+          setShowDashboard(true);
         }}
       />
+    );
+  }
+
+  // 학습 대시보드
+  if (isLoggedIn && showDashboard) {
+    return (
+      <div className="edumatrix-root">
+        <SidebarMenu
+          open={leftOpen}
+          onClose={() => setLeftOpen(false)}
+          onMenuClick={handleSidebarMenuClick}
+        />
+        <ChatbotSidebar open={rightOpen} onClose={() => setRightOpen(false)} />
+        <header className="topbar">
+          <button className="sidebar-toggle" onClick={() => setLeftOpen(true)}>
+            <span role="img" aria-label="메뉴">☰</span>
+          </button>
+          {/* 뒤로가기 */}
+          <button
+            className="back-btn"
+            onClick={handleBackToRecommend}
+            style={{
+              marginLeft: 10,
+              background: "none",
+              border: "none",
+              padding: 0,
+              display: "flex",
+              alignItems: "center"
+            }}
+          >
+            <img
+              src={backArrow}
+              alt="뒤로가기"
+              style={{ width: 28, height: 28, objectFit: "contain" }}
+            />
+          </button>
+          <div style={{ flex: 1 }} />
+          <button className="chatbot-toggle" onClick={() => setRightOpen(true)}>
+            <img src={icon1} alt="AI 챗봇" className="chatbot-icon-btn" />
+          </button>
+        </header>
+        <main className="main-content" style={{ marginTop: "2.3rem" }}>
+          <Dashboard />
+          <button
+            className="login-btn"
+            style={{ margin: "2rem auto 0", width: 180, display: "block" }}
+            onClick={handleLogout}
+          >
+            로그아웃
+          </button>
+        </main>
+      </div>
     );
   }
 
   // 기본 메인 화면
   return (
     <div className="edumatrix-root">
-      {/* 좌측 사이드바 */}
-      <SidebarMenu open={leftOpen} onClose={() => setLeftOpen(false)} />
-
-      {/* 우측 AI 챗봇 */}
+      <SidebarMenu
+        open={leftOpen}
+        onClose={() => setLeftOpen(false)}
+        onMenuClick={handleSidebarMenuClick}
+      />
       <ChatbotSidebar open={rightOpen} onClose={() => setRightOpen(false)} />
-
-      {/* 상단바 */}
       <header className="topbar">
         <button className="sidebar-toggle" onClick={() => setLeftOpen(true)}>
           <span role="img" aria-label="메뉴">☰</span>
@@ -160,10 +409,8 @@ function App() {
           <img src={icon1} alt="AI 챗봇" className="chatbot-icon-btn" />
         </button>
       </header>
-
-      {/* 메인 컨텐츠 (중앙 정렬) */}
       <main className="main-content">
-        <img src={logo} alt="EduMatrix Logo" className="center-logo" />
+        <Logo />
         <div className="main-greeting">
           <h1>EduMatrix에 오신 걸 환영합니다.</h1>
           <p>
@@ -171,10 +418,7 @@ function App() {
             똑똑하고 직관적인 학습 비서와 함께, 성장의 경험을 시작하세요.
           </p>
         </div>
-        <div style={{ marginTop: "2rem" }}>
-          <ThemeSelector current={theme} onChange={setTheme} />
-        </div>
-        {/* 로그인/회원가입 버튼  */}
+        {/* 로그인/회원가입 버튼 추가 */}
         {!isLoggedIn && (
           <div style={{ marginTop: "3rem", display: "flex", justifyContent: "center", gap: "1.5rem" }}>
             <button
@@ -197,16 +441,6 @@ function App() {
               회원가입
             </button>
           </div>
-        )}
-        {/* 로그인된 상태라면 로그아웃 버튼 */}
-        {isLoggedIn && (
-          <button
-            className="login-btn"
-            style={{ margin: "2rem auto 0", width: 180, display: "block" }}
-            onClick={handleLogout}
-          >
-            로그아웃
-          </button>
         )}
       </main>
     </div>

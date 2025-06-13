@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./SelectField.css";
+import "../index.css"; 
 
 function SelectField({ onFieldSelected, onLevelSelected }) {
   const [field, setField] = useState(null);

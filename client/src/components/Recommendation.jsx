@@ -1,4 +1,5 @@
 import React from "react";
+import "../index.css"; 
 
 const recommendData = {
   english: {
