@@ -430,12 +430,7 @@ function App() {
             </button>
             <button
               className="login-btn"
-              style={{
-                width: 120,
-                background: "#eee",
-                color: "#222",
-                border: "1.2px solid #c7c7c7"
-              }}
+              style={{ width: 120 }}
               onClick={() => setAuthView("signup")}
             >
               회원가입

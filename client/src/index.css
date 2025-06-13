@@ -36,9 +36,9 @@
   --input-border: #31364c;
   --input-focus-bg: #78828d;
   --input-text: #fff;
-  --button-bg: #f8f8f8;
-  --button-text: #000000;
-  --button-hover-bg: #b2b9c7;
+  --button-bg: #ffffff;
+  --button-text: #222430;
+  --button-hover-bg: #e6e6e6;
   --button-alt-bg: #262a38;
   --button-alt-text: #ffffff;
   --button-alt-border: #2d3144;
@@ -235,7 +235,7 @@ body {
 }
 .chatbot-content {
   flex: 1;
-  padding: 1.3rem;
+  padding: 1.5rem;
   overflow-y: auto;
   background: var(--input-bg, #f6f8fa);
   font-size: 1.03rem;
@@ -250,8 +250,8 @@ body {
 .chatbot-input {
   flex: 1;
   border: none;
-  font-size: 1.07rem;
-  padding: 0.45rem 0.8rem;
+  font-size: 1rem;
+  padding: 0.45rem 0.1rem;
   border-radius: 12px;
   background: var(--input-bg);
   color: var(--input-text);
@@ -263,9 +263,9 @@ body {
   color: var(--button-text);
   border: none;
   border-radius: 10px;
-  padding: 0.47rem 1.2rem;
+  padding: 0.45rem 0.5rem;
   font-weight: 600;
-  font-size: 1.06rem;
+  font-size: 1rem;
   cursor: pointer;
   transition: background 0.2s;
 }
@@ -426,8 +426,13 @@ body {
   text-align: center;
 }
 
-.login-btn {
-  width: 100%;
+.login-btn,
+.check-button,
+.leveltest-nav,
+.leveltest-submit,
+.leveltest-opt-btn,
+.field-btn,
+.level-btn {
   background: var(--button-bg);
   color: var(--button-text);
   border: none;
@@ -435,14 +440,75 @@ body {
   padding: 0.74rem 0;
   font-weight: 700;
   font-size: 1.12rem;
-  margin-top: 0.18rem;
-  margin-bottom: 0.2rem;
   cursor: pointer;
-  box-shadow: 0 2px 10px rgba(74,144,226,0.08);
   transition: background 0.17s;
 }
-.login-btn:hover {
+
+.login-btn:hover,
+.check-button:hover,
+.leveltest-nav:hover,
+.leveltest-submit:hover,
+.leveltest-opt-btn:hover,
+.field-btn:hover,
+.level-btn:hover {
   background: var(--button-hover-bg);
+}
+
+/* 대체 버튼 스타일 */
+.login-btn[style*="background: #eee"],
+.level-btn {
+  background: var(--button-alt-bg) !important;
+  color: var(--button-alt-text) !important;
+  border: 1.2px solid var(--button-alt-border) !important;
+}
+
+.login-btn[style*="background: #eee"]:hover,
+.level-btn:hover {
+  background: var(--sidebar-hover) !important;
+}
+
+/* 레벨 테스트 버튼 스타일 */
+.leveltest-nav {
+  background: var(--sidebar-hover);
+  color: var(--sidebar-title);
+  font-size: 1.01rem;
+  font-weight: 600;
+  padding: 0.53rem 1.2rem;
+}
+
+.leveltest-nav:disabled {
+  background: var(--input-bg);
+  color: var(--input-border);
+  cursor: default;
+}
+
+.leveltest-submit {
+  background: var(--button-bg);
+  color: var(--button-text);
+}
+
+.leveltest-submit:disabled {
+  background: var(--input-bg);
+  color: var(--input-border);
+  cursor: default;
+}
+
+.leveltest-opt-btn {
+  padding: 0.62rem 0.8rem;
+  border-radius: 10px;
+  border: 1.2px solid var(--sidebar-border);
+  background: var(--input-bg);
+  color: var(--input-text);
+  font-size: 1.06rem;
+  text-align: left;
+}
+
+.leveltest-opt-btn.selected,
+.leveltest-opt-btn:hover {
+  background: var(--sidebar-hover);
+  border: 1.5px solid var(--sidebar-title);
+  color: var(--sidebar-title);
+  font-weight: 700;
 }
 
 .login-footer {
@@ -478,6 +544,19 @@ body {
   .login-logo {
     width: 60px;
     height: 60px;
+  }
+  .chatbot-input-wrap {
+    padding: 0.7rem 0.3rem;
+  }
+  .chatbot-input {
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: auto;
+  }
+  .chatbot-send {
+    flex-shrink: 0;
+    min-width: 55px;
+    width: auto;
   }
 }
 
@@ -761,7 +840,7 @@ body {
   display: grid;
   grid-template-areas:
     "performance skill-breakdown quizzes-evaluation"
-    "performance weekly-progress weekly-evaluation"
+    "performance weekly-evaluation weekly-evaluation"
     "ai-recommended-task wulday performance-over-time"
     "study-notes feedback performance-over-time";
   grid-template-columns: repeat(3, 1fr);
@@ -775,9 +854,10 @@ body {
     grid-template-columns: 1fr 1fr;
     grid-template-areas:
       "performance skill-breakdown"
-      "quizzes-evaluation weekly-progress"
-      "weekly-evaluation ai-recommended-task"
-      "wulday performance-over-time"
+      "quizzes-evaluation weekly-evaluation"
+      "weekly-evaluation weekly-evaluation"
+      "ai-recommended-task wulday"
+      "performance-over-time performance-over-time"
       "study-notes feedback";
     gap: 1.3rem;
   }
@@ -789,7 +869,6 @@ body {
       "performance"
       "skill-breakdown"
       "quizzes-evaluation"
-      "weekly-progress"
       "weekly-evaluation"
       "ai-recommended-task"
       "wulday"
@@ -802,17 +881,17 @@ body {
 
 /* ===== 카드 기본 스타일 ===== */
 .card {
-  background: var(--card-bg, #fff);
-  color: var(--text, #222);
+  background: var(--card-bg);
+  color: var(--text);
   border-radius: 1.3rem;
-  box-shadow: var(--card-shadow, 0 4px 16px rgba(74,144,226,0.08));
+  box-shadow: var(--card-shadow);
   padding: 1.5rem 1.3rem 1.1rem 1.3rem;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   min-height: 135px;
   transition: box-shadow 0.18s, background 0.22s, color 0.22s;
-  border: 1.1px solid var(--sidebar-border, #e3ecfb);
+  border: 1.1px solid var(--sidebar-border);
   cursor: pointer;
   position: relative;
   animation: fadeIn 0.7s;
@@ -820,7 +899,7 @@ body {
 
 .card:hover {
   box-shadow: 0 8px 32px rgba(90,120,240,0.14);
-  background: var(--sidebar-hover, #f0f6ff);
+  background: var(--sidebar-hover);
   z-index: 2;
   transform: translateY(-3px) scale(1.012);
 }
@@ -828,13 +907,13 @@ body {
 .card h3 {
   font-size: 1.15rem;
   font-weight: 700;
-  color: var(--sidebar-title, #2467b4);
+  color: var(--sidebar-title);
   margin: 0 0 0.6rem 0;
   letter-spacing: -0.01em;
 }
 
 .card p {
-  color: var(--sidebar-text, #354869);
+  color: var(--text);
   margin: 0.2rem 0 0 0;
   font-size: 1rem;
 }
@@ -856,10 +935,10 @@ body {
   min-height: 260px;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(120deg, var(--card-bg, #fff) 70%, var(--sidebar-hover, #e9f3fa) 100%);
+  background: linear-gradient(120deg, var(--card-bg) 70%, var(--sidebar-hover) 100%);
 }
 .performance:hover {
-  background: linear-gradient(120deg, var(--sidebar-hover, #e9f3fa) 70%, var(--card-bg, #fff) 100%);
+  background: linear-gradient(120deg, var(--sidebar-hover) 70%, var(--card-bg) 100%);
 }
 
 .skill-breakdown {
@@ -872,7 +951,8 @@ body {
 }
 
 .ai-recommended-task {
-  min-height: 145px;
+  min-height: 260px;
+  justify-content: center;
 }
 
 .wulday {
@@ -1354,10 +1434,35 @@ body {
 
 /* ========== 반응형 ========== */
 @media (max-width: 700px) {
+  .chatbot-input-wrap {
+    padding: 0.7rem 0.5rem;
+    box-sizing: border-box;
+  }
   .chatbot-box {
     min-height: 480px;
     width: 96vw;
     margin: 0 1vw;
+  }
+  .chatbot-input {
+    flex: 1 1 auto;
+  }
+  .chatbot-send {
+    background: var(--button-bg);
+    color: var(--button-text);
+    border: none;
+    border-radius: 10px;
+    padding: 0.47rem 1.2rem;
+    font-weight: 600;
+    font-size: 1.06rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    flex-shrink: 0;
+    min-width: fit-content;
+    width: auto;
+    flex: 0 0 auto;
+  }
+  .chatbot-send:hover {
+    background: var(--button-hover-bg);
   }
   .sidebar.right {
     width: 100vw;
@@ -1367,7 +1472,7 @@ body {
     right: 0;
   }
   .main-content {
-    min-height: unset; /* 수정: 75vh -> unset */
+    min-height: unset;
   }
 }
 
@@ -1413,4 +1518,433 @@ body {
     gap: 1.1rem;
   }
 }
+
+/* B'_Styles for SkillAnalysis component */
+.skill-analysis-container {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 3.2rem 1.2rem 2.5rem 1.2rem;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 92vh;
+  animation: fadeIn 0.6s;
+}
+
+.skill-analysis-container .back-button {
+  background: none;
+  border: none;
+  color: var(--sidebar-title);
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 1.9rem;
+  cursor: pointer;
+  transition: color 0.19s;
+  padding: 0.2em 0.3em;
+  border-radius: 8px;
+}
+
+.skill-analysis-container .back-button:hover {
+  background: var(--sidebar-hover);
+  color: var(--button-bg);
+}
+
+.skill-analysis-container .page-title {
+  font-size: 1.36rem;
+  font-weight: 700;
+  color: var(--sidebar-title);
+  margin: 0 0 2rem 0;
+  text-align: center;
+}
+
+.skill-analysis-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.skill-analysis-header h2 {
+    font-size: 1.8em;
+    font-weight: bold;
+    color: var(--text);
+}
+
+.skill-analysis-main {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: 1fr 1fr;
+  grid-template-areas:
+    "summary summary"
+    "visualization visualization"
+    "report goals";
+}
+
+/* Adjust layout for smaller screens */
+@media (max-width: 768px) {
+  .skill-analysis-main {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "summary"
+      "visualization"
+      "report"
+      "goals";
+  }
+}
+
+/* Assign grid areas to the sections */
+.summary-section {
+  grid-area: summary;
+}
+
+.visualization-section {
+  grid-area: visualization;
+}
+
+.report-section {
+  grid-area: report;
+}
+
+.goals-section {
+  grid-area: goals;
+}
+
+.summary-content,
+.visualization-content,
+.report-content,
+.goals-content {
+  color: var(--text);
+}
+
+.score-box {
+    margin-right: 20px;
+    padding: 10px;
+}
+
+.score-box .score {
+    font-size: 3em;
+    font-weight: bold;
+    color: var(--text);
+    line-height: 1;
+}
+
+.score-box .unit {
+    font-size: 1em;
+    color: var(--sidebar-text);
+    line-height: 1;
+}
+
+.comment-box,
+.recommendation-box {
+    flex: 1;
+    min-width: 180px;
+    text-align: center;
+    padding: 15px;
+    border: 1px solid var(--sidebar-border);
+    border-radius: 8px;
+    margin: 10px;
+    background-color: var(--input-bg);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.comment-box p:first-child,
+.recommendation-box p:first-child {
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: var(--sidebar-title);
+}
+
+.visualization-content {
+    justify-content: center;
+    align-items: center;
+    padding: 20px 0;
+}
+
+.report-content,
+.goals-content {
+    flex-direction: column;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.report-content ul,
+.goals-content ul {
+    list-style: disc inside;
+    padding-left: 0;
+    color: var(--text);
+}
+
+.report-content li,
+.goals-content li {
+    margin-bottom: 10px;
+    line-height: 1.5;
+    color: var(--text);
+}
+
+.quiz-container {
+  font-family: sans-serif;
+  padding: 20px;
+  border: 1px solid var(--sidebar-border);
+  border-radius: 8px;
+  max-width: 600px;
+  margin: 20px auto;
+  background-color: var(--card-bg);
+  color: var(--text);
+}
+
+.quiz-question-section,
+.quiz-result-section,
+.quiz-stats-section {
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--sidebar-border);
+}
+
+.quiz-stats-section {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.question-text {
+  font-size: 1.2em;
+  margin-bottom: 15px;
+  color: var(--text);
+}
+
+.options label {
+  display: block;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+.check-button {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1em;
+  cursor: pointer;
+  margin-top: 15px;
+}
+
+.check-button:hover {
+  background-color: #0056b3;
+}
+
+.result-header {
+  font-size: 1.1em;
+  font-weight: bold;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  color: var(--text);
+}
+
+.result-header.incorrect {
+  color: #dc3545;
+}
+
+.result-header .icon {
+  margin-right: 5px;
+}
+
+.result-explanation {
+  font-size: 0.9em;
+  color: var(--sidebar-text);
+}
+
+.quiz-stats-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.stat-item {
+  flex-grow: 1;
+  margin-right: 10px;
+}
+
+.stat-item:last-child {
+  margin-right: 0;
+}
+
+.stat-label {
+  font-size: 0.9em;
+  color: var(--sidebar-text);
+  margin-bottom: 5px;
+}
+
+.score-graph,
+.difficulty-slider {
+  height: 50px;
+  background-color: var(--section-bg);
+  border: 1px dashed var(--sidebar-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8em;
+  color: var(--text);
+}
+
+.difficulty-slider {
+    height: 20px;
+}
+
+.quizzes-evaluation {
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+}
+
+.weekly-evaluation {
+  min-height: 260px;
+  justify-content: center;
+}
+
+/* B퀴즈 */
+
+.quiz-container {
+  font-family: sans-serif;
+  padding: 20px;
+  border: 1px solid var(--sidebar-border);
+  border-radius: 8px;
+  width: 100%;
+  height: 100%;
+  background-color: var(--card-bg);
+  display: flex;
+  flex-direction: column;
+  color: var(--text);
+}
+
+.quiz-question-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--sidebar-border);
+}
+
+.quiz-result-section,
+.quiz-stats-section {
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--sidebar-border);
+}
+
+.quiz-stats-section {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.question-text {
+  font-size: 1.4em;
+  margin-bottom: 20px;
+  line-height: 1.5;
+  color: var(--text);
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.options label {
+  display: block;
+  padding: 12px 15px;
+  border: 1px solid var(--sidebar-border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background-color: var(--card-bg);
+  color: var(--text);
+}
+
+.options label:hover {
+  background-color: var(--sidebar-hover);
+  border-color: var(--sidebar-border);
+}
+
+.check-button {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  background-color: var(--button-bg);
+  color: var(--button-text);
+  border: none;
+  border-radius: 4px;
+  font-size: 1em;
+  cursor: pointer;
+  margin-top: 15px;
+}
+
+.check-button:hover {
+  background-color: var(--button-hover-bg);
+}
+
+.result-header {
+  font-size: 1.1em;
+  font-weight: bold;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  color: var(--text);
+}
+
+.result-header.incorrect {
+  color: #dc3545;
+}
+
+.result-header .icon {
+  margin-right: 5px;
+}
+
+.result-explanation {
+  font-size: 0.9em;
+  color: var(--text);
+}
+
+.quiz-stats-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.stat-item {
+  flex-grow: 1;
+  margin-right: 10px;
+}
+
+.stat-item:last-child {
+  margin-right: 0;
+}
+
+.stat-label {
+  font-size: 0.9em;
+  color: var(--sidebar-text);
+  margin-bottom: 5px;
+}
+
+.score-graph,
+.difficulty-slider {
+  height: 50px;
+  background-color: var(--card-bg);
+  border: 1px dashed var(--sidebar-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8em;
+  color: var(--text);
+}
+
+.difficulty-slider {
+    height: 20px;
+} 
+
 
