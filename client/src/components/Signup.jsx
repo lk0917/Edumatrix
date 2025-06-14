@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import logo from "../assets/logo.png";
-import "../index.css"; 
+import "../index.css";
 
 // onBackToHome, backArrow prop 추가 필요!
 function Signup({ onSignup, onSwitchToLogin, onBackToHome, backArrow }) {
+  const [username, setUsername] = useState("");
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [pw, setPw] = useState("");
   const [pw2, setPw2] = useState("");
@@ -14,7 +16,7 @@ function Signup({ onSignup, onSwitchToLogin, onBackToHome, backArrow }) {
 
   const handleSignup = (e) => {
     e.preventDefault();
-    if (!email || !pw || !pw2 || !gender || !birth || !phone) {
+    if (!username || !name || !email || !pw || !pw2 || !gender || !birth || !phone) {
       setError("모든 항목을 입력하세요.");
       return;
     }
@@ -22,18 +24,19 @@ function Signup({ onSignup, onSwitchToLogin, onBackToHome, backArrow }) {
       setError("비밀번호가 일치하지 않습니다.");
       return;
     }
-    // 추가 유효성 검사 예시 (생년월일 8자리, 전화번호)
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(birth)) {
-      setError("생년월일은 YYYY-MM-DD 형식으로 입력하세요.");
+    if (!/^\d{6}$/.test(birth)) {
+      setError("생년월일은 YYMMDD 형식의 숫자 6자리로 입력하세요.");
       return;
     }
     if (!/^\d{10,11}$/.test(phone.replace(/-/g, ""))) {
       setError("전화번호는 숫자만 10~11자리로 입력하세요.");
       return;
     }
+
     setError("");
-    // 회원가입 정보 객체로 전달
     onSignup({
+      username,
+      name,
       email,
       password: pw,
       gender,
@@ -69,6 +72,27 @@ function Signup({ onSignup, onSwitchToLogin, onBackToHome, backArrow }) {
       <form className="login-box" onSubmit={handleSignup}>
         <img src={logo} alt="EduMatrix Logo" className="login-logo" />
         <h2>회원가입</h2>
+
+        <div className="login-field">
+          <label>아이디</label>
+          <input
+            type="text"
+            value={username}
+            onChange={e => setUsername(e.target.value)}
+            placeholder="아이디 입력"
+            autoComplete="username"
+          />
+        </div>
+        <div className="login-field">
+          <label>이름</label>
+          <input
+            type="text"
+            value={name}
+            onChange={e => setName(e.target.value)}
+            placeholder="이름 입력"
+            autoComplete="name"
+          />
+        </div>
         <div className="login-field">
           <label>이메일</label>
           <input
@@ -99,41 +123,42 @@ function Signup({ onSignup, onSwitchToLogin, onBackToHome, backArrow }) {
             autoComplete="new-password"
           />
         </div>
+
         <div className="login-field">
-          <label>성별</label>
-          <div style={{ display: "flex", gap: "1.5rem", alignItems: "center" }}>
-            <label style={{ fontWeight: 400 }}>
+          <label style={{ display: "block", marginBottom: "0.5rem" }}>성별</label>
+          <div style={{ display: "flex", flexDirection: "row", gap: "2rem", alignItems: "center" }}>
+            <label style={{ display: "flex", alignItems: "center", gap: "0.4rem", fontWeight: 400 }}>
               <input
                 type="radio"
                 name="gender"
                 value="남성"
                 checked={gender === "남성"}
                 onChange={() => setGender("남성")}
-                style={{ marginRight: 6 }}
               />
               남성
             </label>
-            <label style={{ fontWeight: 400 }}>
+            <label style={{ display: "flex", alignItems: "center", gap: "0.4rem", fontWeight: 400 }}>
               <input
                 type="radio"
                 name="gender"
                 value="여성"
                 checked={gender === "여성"}
                 onChange={() => setGender("여성")}
-                style={{ marginRight: 6 }}
               />
               여성
             </label>
           </div>
         </div>
+
         <div className="login-field">
-          <label>생년월일</label>
+          <label>생년월일 (YYMMDD)</label>
           <input
-            type="date"
+            type="text"
             value={birth}
             onChange={e => setBirth(e.target.value)}
-            placeholder="YYYY-MM-DD"
+            placeholder="예: 990101"
             autoComplete="bday"
+            maxLength={6}
           />
         </div>
         <div className="login-field">
@@ -144,11 +169,14 @@ function Signup({ onSignup, onSwitchToLogin, onBackToHome, backArrow }) {
             onChange={e => setPhone(e.target.value)}
             placeholder="숫자만 입력 (예: 01012345678)"
             autoComplete="tel"
-            maxLength={13}
+            maxLength={11}
           />
         </div>
+
         {error && <div className="login-error">{error}</div>}
+
         <button className="login-btn" type="submit">회원가입</button>
+
         <div className="login-footer">
           이미 계정이 있으신가요?{" "}
           <button type="button" className="link-btn" onClick={onSwitchToLogin}>

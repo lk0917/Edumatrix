@@ -3,18 +3,18 @@ import logo from "../assets/logo.png";
 import "../index.css"; 
 
 function Login({ onLogin, onSwitchToSignup }) {
-  const [email, setEmail] = useState("");
+  const [idOrEmail, setIdOrEmail] = useState(""); // 아이디 또는 이메일
   const [pw, setPw] = useState("");
   const [error, setError] = useState("");
 
   const handleLogin = (e) => {
     e.preventDefault();
-    if (!email || !pw) {
-      setError("이메일과 비밀번호를 입력하세요.");
+    if (!idOrEmail || !pw) {
+      setError("아이디(또는 이메일)와 비밀번호를 입력하세요.");
       return;
     }
     setError("");
-    onLogin(email);
+    onLogin(idOrEmail); // 백엔드에서 이메일/아이디 판별
   };
 
   return (
@@ -23,13 +23,13 @@ function Login({ onLogin, onSwitchToSignup }) {
         <img src={logo} alt="EduMatrix Logo" className="login-logo" />
         <h2>로그인</h2>
         <div className="login-field">
-          <label>이메일</label>
+          <label>아이디 또는 이메일</label>
           <input
-            type="email"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            placeholder="이메일 입력"
-            autoComplete="email"
+            type="text"
+            value={idOrEmail}
+            onChange={e => setIdOrEmail(e.target.value)}
+            placeholder="아이디 또는 이메일 입력"
+            autoComplete="username"
           />
         </div>
         <div className="login-field">
