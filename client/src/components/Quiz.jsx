@@ -26,7 +26,7 @@ const Quiz = ({ onBack }) => {
 
       <div className="quiz-result-section">
         <div className="result-header incorrect">
-          <span className="icon">✅</span>
+          <span className="icon">-</span>
           오답
         </div>
         <div className="result-explanation">

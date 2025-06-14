@@ -1,3 +1,4 @@
+// App.jsx
 import React, { useState, useEffect } from "react";
 import SidebarMenu from "./components/SidebarMenu";
 import ChatbotSidebar from "./components/ChatbotSidebar";
@@ -250,12 +251,8 @@ function App() {
           </button>
         </header>
         <main>
-          <LearningRecords
-            onBack={() => {
-              setShowRecords(false);
-              setShowDashboard(true); // 뒤로가기 시 대시보드로 이동
-            }}
-          />
+          {/* onMenuClick prop 전달 */}
+          <LearningRecords onMenuClick={handleSidebarMenuClick} />
         </main>
       </div>
     );
