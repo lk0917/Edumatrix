@@ -1387,6 +1387,13 @@ body {
   font-size: 1.08rem;
   transition: background 0.3s, color 0.3s;
 }
+
+/* ▼▼▼ 다트모드 개선 ▼▼▼ */
+[data-theme="dark"] .mypage-section .mypage-info,
+[data-theme="dark"] .mypage-section .mypage-info * {
+  color: #222 !important;
+}
+
 .mypage-info div {
   display: flex;
   align-items: center;
