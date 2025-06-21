@@ -6,12 +6,22 @@ import SkillAnalysis from './SkillAnalysis'; // SkillAnalysis 컴포넌트 임�
 import RadarChartComponent from './RadarChartComponent'; // RadarChartComponent 임포트 추가
 import Quiz from './Quiz'; // Quiz 컴포넌트 임포트 유지
 import QuizQuestionCard from './QuizQuestionCard'; // QuizQuestionCard 컴포넌트 다시 임포트
+import Recommendation from './Recommendation'; // Recommendation 컴포넌트 임포트 추가
+import WeeklyFinalEvaluation from './WeeklyFinalEvaluation'; // WeeklyFinalEvaluation 컴포넌트 임포트 추가
+import StudyNote from './StudyNote'; // StudyNote 컴포넌트 임포트 추가
+import ScheduleAdjust from './ScheduleAdjust'; // ScheduleAdjust 컴포넌트 임포트 추가
+import FeedbackDetail from './FeedbackDetail'; // FeedbackDetail 컴포넌트 임포트 추가
 // import QuizQuestionCard from './QuizQuestionCard'; // QuizQuestionCard 컴포넌트 임포트 제거
 
 function Dashboard() {
   const [showProgressDetail, setShowProgressDetail] = useState(false);
   const [showSkillAnalysis, setShowSkillAnalysis] = useState(false); // SkillAnalysis 표시 상태 유지
   const [showQuiz, setShowQuiz] = useState(false); // Quiz 표시 상태 유지
+  const [showRecommendation, setShowRecommendation] = useState(false); // 추천학습목록 표시 상태 추가
+  const [showWeeklyFinalEvaluation, setShowWeeklyFinalEvaluation] = useState(false); // 주간 최종 평가 표시 상태 추가
+  const [showStudyNote, setShowStudyNote] = useState(false); // 스터디 노트 표시 상태 추가
+  const [showScheduleAdjust, setShowScheduleAdjust] = useState(false); // 스케줄 조정 표시 상태 추가
+  const [showFeedbackDetail, setShowFeedbackDetail] = useState(false); // 학습 피드백 상세 표시 상태 추가
 
   // 3번부터 10번까지의 기능 목록 (바로가기 버튼용은 삭제)
   // const quickLinks = [
@@ -32,8 +42,17 @@ function Dashboard() {
       setShowSkillAnalysis(true); // SkillAnalysis 표시 상태 변경
     } else if (cardName === 'Quizzes & Evaluation') { // '퀴즈 및 수준 평가' 카드 클릭 시 이동 로직 유지
       setShowQuiz(true); // Quiz 표시 상태 변경
-    }
-     else {
+    } else if (cardName === 'AI-Recommended Task') {
+      setShowRecommendation(true);
+    } else if (cardName === 'Weekly Final Evaluation') { // 주간 최종 평가 카드 클릭 시
+      setShowWeeklyFinalEvaluation(true);
+    } else if (cardName === 'Study Notes') {
+      setShowStudyNote(true);
+    } else if (cardName === 'Wulday') {
+      setShowScheduleAdjust(true);
+    } else if (cardName === 'Feedback') {
+      setShowFeedbackDetail(true);
+    } else {
       alert(`${cardName} 카드를 클릭했습니다. 해당 페이지로 이동하는 로직 추가 필요.`);
     }
   };
@@ -48,6 +67,30 @@ function Dashboard() {
 
   if (showQuiz) { // Quiz 표시 상태일 때 렌더링 로직 유지
     return <Quiz onBack={() => setShowQuiz(false)} />; // Quiz 렌더링 및 뒤로 가기 함수 전달
+  }
+
+  if (showRecommendation) {
+    return <Recommendation 
+      field="programming" // 기본값으로 programming 설정
+      level="Intermediate" // 기본값으로 Intermediate 설정
+      onBack={() => setShowRecommendation(false)}
+    />;
+  }
+
+  if (showWeeklyFinalEvaluation) {
+    return <WeeklyFinalEvaluation onBack={() => setShowWeeklyFinalEvaluation(false)} />;
+  }
+
+  if (showStudyNote) {
+    return <StudyNote onBack={() => setShowStudyNote(false)} />;
+  }
+
+  if (showScheduleAdjust) {
+    return <ScheduleAdjust onBack={() => setShowScheduleAdjust(false)} />;
+  }
+
+  if (showFeedbackDetail) {
+    return <FeedbackDetail onBack={() => setShowFeedbackDetail(false)} />;
   }
 
   return (
@@ -71,7 +114,7 @@ function Dashboard() {
           <h3>퀴즈 및 수준 평가</h3>
           <QuizQuestionCard />
         </div>
-         <div className="weekly-evaluation card" data-grid-area="weekly-evaluation">
+         <div className="weekly-evaluation card" data-grid-area="weekly-evaluation" onClick={() => handleCardClick('Weekly Final Evaluation')}>
            <h3>주간 최종 평가</h3>
            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', height: '100%' }}>
              <div style={{ 
@@ -157,7 +200,7 @@ function Dashboard() {
           <h3>누적 성취도 그래프</h3>
           <p>누적 성취도 그래프</p>
         </div>
-        <div className="study-notes card" data-grid-area="study-notes" style={{ gridRow: 'span 2' }}>
+        <div className="study-notes card" data-grid-area="study-notes" style={{ gridRow: 'span 2' }} onClick={() => handleCardClick('Study Notes')}>
           <h3>스터디 노트</h3>
           <div style={{ 
             display: 'flex', 
@@ -183,7 +226,7 @@ function Dashboard() {
             </div>
           </div>
         </div>
-         <div className="feedback card" data-grid-area="feedback">
+         <div className="feedback card" data-grid-area="feedback" onClick={() => handleCardClick('Feedback')}>
            <h3>학습 피드백</h3>
            <p>종합적인 학습 피드백 및 분석</p>
         </div>
