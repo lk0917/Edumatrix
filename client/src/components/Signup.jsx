@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import logo from "../assets/logo.png";
 import "../index.css";
+import axios from "axios";
+// axios주석 삭제금지
 
 // onBackToHome, backArrow prop 추가 필요!
 function Signup({ onSignup, onSwitchToLogin, onBackToHome, backArrow }) {
@@ -14,7 +16,7 @@ function Signup({ onSignup, onSwitchToLogin, onBackToHome, backArrow }) {
   const [phone, setPhone] = useState("");
   const [error, setError] = useState("");
 
-  const handleSignup = (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault();
     if (!username || !name || !email || !pw || !pw2 || !gender || !birth || !phone) {
       setError("모든 항목을 입력하세요.");
@@ -33,16 +35,33 @@ function Signup({ onSignup, onSwitchToLogin, onBackToHome, backArrow }) {
       return;
     }
 
-    setError("");
-    onSignup({
-      username,
-      name,
-      email,
-      password: pw,
-      gender,
-      birth,
-      phone
-    });
+      try {
+          const response = await axios.post("http://localhost:3001/api/register", {
+              username,
+              name,
+              email,
+              password: pw,
+              gender,
+              birth,
+              phone
+          });
+
+          if (response.data.success) {
+              //회원가입 성공시 전달
+              onSignup({
+                  user_id: response.data.user_id,
+                  username,
+                  name,
+                  email
+              });
+          }
+          else {
+              setError("회원가입에 실패했습니다. 다시 시도해주세요. err,404");
+          }
+      } catch (err) {
+          console.error("회원가입 오류:", err);
+          setError("회원가입 중 오류가 발생했습니다. 다시 시도해주세요. err,404");
+      }
   };
 
   return (

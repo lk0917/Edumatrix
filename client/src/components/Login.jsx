@@ -1,21 +1,34 @@
 import React, { useState } from "react";
 import logo from "../assets/logo.png";
 import "../index.css"; 
+import axios from "axios";
 
 function Login({ onLogin, onSwitchToSignup }) {
   const [idOrEmail, setIdOrEmail] = useState(""); // 아이디 또는 이메일
   const [pw, setPw] = useState("");
   const [error, setError] = useState("");
 
-  const handleLogin = (e) => {
-    e.preventDefault();
-    if (!idOrEmail || !pw) {
-      setError("아이디(또는 이메일)와 비밀번호를 입력하세요.");
-      return;
-    }
-    setError("");
-    onLogin(idOrEmail); // 백엔드에서 이메일/아이디 판별
-  };
+    const handleLogin = async (e) => {
+        e.preventDefault();
+        if (!idOrEmail || !pw) {
+            setError("이메일과 비밀번호를 입력하세요.");
+            return;
+        }
+        try {
+            const response = await axios.post("http://localhost:3001/api/login", { //db주소의 맞게 변경할것.
+                idOrEmail,
+                password: pw
+            });
+            const userData = response.data.user;
+            setError("");
+            onLogin(userData);
+        }
+        catch (err) {
+            console.error("로그인 실패:", err);
+            setError(err.response?.data?.message || "로그인에 실패했습니다. 다시 시도해주세요.");
+
+        }
+    };
 
   return (
     <div className="login-root">
