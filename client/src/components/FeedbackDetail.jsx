@@ -1,3 +1,4 @@
+//학습 피드백
 import React from 'react';
 
 function FeedbackDetail({ onBack }) {
@@ -5,7 +6,7 @@ function FeedbackDetail({ onBack }) {
     <div className="feedback-detail-container">
       <button className="feedback-back-btn" onClick={onBack}>← 대시보드로돌아가기</button>
       <h2 className="feedback-title">학습 피드백</h2>
-      <div className="feedback-detail-main">
+      <div className="feedback-detail-main card feedback">
         {/* 왼쪽 영역 */}
         <div className="feedback-left">
           {/* 학습 피드백 입력 */}

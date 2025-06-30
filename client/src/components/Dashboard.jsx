@@ -196,10 +196,6 @@ function Dashboard() {
           <h3>스케줄 조정</h3>
           <p>주간 달력/스케줄 영역</p>
         </div>
-        <div className="performance-over-time card" data-grid-area="performance-over-time" onClick={() => handleCardClick('Performance Over Time')}>
-          <h3>누적 성취도 그래프</h3>
-          <p>누적 성취도 그래프</p>
-        </div>
         <div className="study-notes card" data-grid-area="study-notes" style={{ gridRow: 'span 2' }} onClick={() => handleCardClick('Study Notes')}>
           <h3>스터디 노트</h3>
           <div style={{ 

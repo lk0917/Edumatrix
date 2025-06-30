@@ -91,7 +91,7 @@ function Recommendation({ recommendations, onBack }) {
                   <div className="recommend-bar" key={i}>
                     <div className="recommend-bar-label">{item.label}</div>
                     <div className="recommend-bar-graph">
-                      <div className="recommend-bar-fill" style={{ width: `${item.days.length * 14.2}%` }} />
+                      <div className="recommend-bar-fill" style={{ width: `${item.days.length * 14.2}%`, background: 'linear-gradient(90deg, #4B6CB7 60%, #6b8bd4 100%)' }} />
                     </div>
                   </div>
                 ))}
@@ -100,11 +100,11 @@ function Recommendation({ recommendations, onBack }) {
             </div>
             <div className="recommend-piebox">
               <div className="recommend-pie-title">AI 추천 계획</div>
-              <PieChart data={rec.pie} colors={["#3a6ff7", "#8bbcff"]} />
+              <PieChart data={rec.pie} colors={["#4B6CB7", "#6b8bd4"]} />
               <div className="recommend-pie-legend">
                 {rec.pieLabels.map((label, i) => (
                   <div className="recommend-legend-item" key={i}>
-                    <div className="recommend-color-dot" style={{ background: i === 0 ? "#3a6ff7" : "#8bbcff" }} />
+                    <div className="recommend-color-dot" style={{ background: i === 0 ? "#4B6CB7" : "#6b8bd4" }} />
                     {label}
                   </div>
                 ))}
@@ -114,7 +114,7 @@ function Recommendation({ recommendations, onBack }) {
           <div className="recommend-bottom-row">
             <div className="recommend-due">예상 완료 일정&nbsp; {rec.due}</div>
             <div className="recommend-progress-bar">
-              <div className="recommend-progress-fill" style={{ width: "60%" }} />
+              <div className="recommend-progress-fill" style={{ width: "60%", background: 'linear-gradient(90deg, #4B6CB7 60%, #6b8bd4 100%)' }} />
             </div>
             <div className="recommend-goal">학습 목표 수&nbsp; {rec.goals}</div>
           </div>
