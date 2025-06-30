@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+﻿import React, { useState } from "react";
 import logo from "../assets/logo.png";
 import "../index.css"; 
 import axios from "axios";
@@ -19,13 +19,14 @@ function Login({ onLogin, onSwitchToSignup }) {
                 idOrEmail,
                 password: pw
             });
+            localStorage.setItem("user_id", response.data.user.user_id);
             const userData = response.data.user;
             setError("");
             onLogin(userData);
         }
         catch (err) {
             console.error("로그인 실패:", err);
-            setError(err.response?.data?.message || "로그인에 실패했습니다. 다시 시도해주세요.");
+            setError(err.response?.data?.message || "로그인실패");
 
         }
     };
