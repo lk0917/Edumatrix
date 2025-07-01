@@ -134,7 +134,7 @@ router.get("/user-fields", async (req, res) => {
             "SELECT field, level FROM user_fields WHERE user_id = ?",
             [user_id]
         );
-        res.json(rows); // ��: [{ field: 'english', level: 'beginner' }, ...]
+        res.json(rows); // 필드: [{ field: 'english', level: 'beginner' }, ...]
     } catch (err) {
         console.error("분야/레벨 조회 오류:", err);
         res.status(500).json({ error: "서버 오류" });
