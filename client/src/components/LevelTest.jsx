@@ -44,7 +44,7 @@ const resultLevel = (score) => {
   return "Advance";
 };
 
-function LevelTest({ field, onBack, onComplete }) {
+function LevelTest({ field, onBack, onComplete, isNewUser }) {
   const questions = questionsData[field] || [];
   const [current, setCurrent] = useState(0);
   const [selected, setSelected] = useState(Array(questions.length).fill(null));
@@ -96,7 +96,8 @@ function LevelTest({ field, onBack, onComplete }) {
 
     setTimeout(() => {
       // 결과 전달 및 추천 화면으로 이동
-      if (onComplete) onComplete(resultLevel(correct));
+      // 신규 회원 여부도 함께 전달 (App.jsx에서 onComplete(level, isNewUser) 구조 활용 가능)
+      if (onComplete) onComplete(resultLevel(correct), isNewUser);
     }, 1600); // 1.6초 후 이동 (UX 효과)
   };
 

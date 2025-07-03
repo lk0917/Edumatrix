@@ -56,22 +56,22 @@ function App() {
   const [showSettings, setShowSettings] = useState(false);
   const [showRecords, setShowRecords] = useState(false); // 학습 기록 추가
 
+  const [isNewUser, setIsNewUser] = useState(false); // 신규 회원 플래그
 
-    // 마이페이지용 사용자 정보 디버깅용 함수
-    const [userInfo, setUserInfo] = useState(null) // 초기값 NULL 설정
-    const [userID, setUserId] = useState(null); // 로그인한 id 저장
+  // 마이페이지용 사용자 정보 디버깅용 함수
+  const [userInfo, setUserInfo] = useState(null); // 초기값 NULL 설정
+  const [userID, setUserId] = useState(null); // 로그인한 id 저장
 
-    const handleLoginSuccess1 = async () => { //로그인 핸들러
-        setIsLoggedIn(true);
-        setAuthView(null);
-        setFieldSelect(true);
+  const handleLoginSuccess1 = async () => { //로그인 핸들러(예전 버전)
+    setIsLoggedIn(true);
+    setAuthView(null);
+    setFieldSelect(true);
 
-        const res = await axios.get("http://localhost:3001/api/userinfo?user_id=1");
-        setUserInfo(res.data); // 사용자 정보 가져옴
+    const res = await axios.get("http://localhost:3001/api/userinfo?user_id=1");
+    setUserInfo(res.data); // 사용자 정보 가져옴
 
-        setUserId(res.data.user_id); // 로그인한 사용자 DB -> ID 저장
-    };
-
+    setUserId(res.data.user_id); // 로그인한 사용자 DB -> ID 저장
+  };
 
   // 테마가 바뀔 때마다 html data-theme 동기화
   useEffect(() => {
@@ -79,30 +79,38 @@ function App() {
     localStorage.setItem("edumatrix-theme", theme);
   }, [theme]);
 
-  // 핸들러 함수들
-    const handleLoginSuccess = async (userData) => {
-        setUserId(userData.user_id);
-        setIsLoggedIn(true);
-        setAuthView(null);
-        setFieldSelect(true);
-        setUserField(null);
-        setUserLevel(null);
-        setShowRecommend(false);
-        setShowLevelTest(false);
-        setShowDashboard(false);
-        setShowSettings(false);
-        setShowRecords(false);
+  // 로그인/회원가입 성공 핸들러
+  const handleLoginSuccess = async (userData) => {
+    setUserId(userData.user_id);
+    setIsLoggedIn(true);
+    setAuthView(null);
+    setUserField(null);
+    setUserLevel(null);
+    setShowRecommend(false);
+    setShowDashboard(false);
+    setShowSettings(false);
+    setShowRecords(false);
 
-        try {
-            const res = await axios.get(`http://localhost:3001/api/userinfo?user_id=${userData.user_id}`); //수정했음
-            setUserInfo(res.data);
-            setTheme(res.data.theme);
-        } catch (err) {
-            console.error("사용자 정보 불러오기 실패", err);
-        }
-    };
+    // 신규회원 여부에 따라 분기(핵심 로직)
+    if (isNewUser) {
+      setFieldSelect(false);
+      setShowLevelTest(true); // 회원가입 후 로그인 → 레벨테스트부터
+      setIsNewUser(false); // 한 번만
+    } else {
+      setFieldSelect(true);
+      setShowLevelTest(false);
+    }
 
-    const handleLogout = () => {
+    try {
+      const res = await axios.get(`http://localhost:3001/api/userinfo?user_id=${userData.user_id}`);
+      setUserInfo(res.data);
+      setTheme(res.data.theme);
+    } catch (err) {
+      console.error("사용자 정보 불러오기 실패", err);
+    }
+  };
+
+  const handleLogout = () => {
     setIsLoggedIn(false);
     setAuthView(null);
     setFieldSelect(false);
@@ -114,14 +122,15 @@ function App() {
     setShowSettings(false);
     setShowRecords(false);
   };
-    const handleFieldSelected = (field) => setUserField(field);
 
-    // 분야, 레벨 선택 핸들러 //
-    const handleLevelSelected = async (field, level) => {
-        if (!userID) {
-            console.warn("ID가 확인되지 않습니다. 요청을 중단합니다.");
-            return;
-        }
+  const handleFieldSelected = (field) => setUserField(field);
+
+  // 분야, 레벨 선택 핸들러 //
+  const handleLevelSelected = async (field, level) => {
+    if (!userID) {
+      console.warn("ID가 확인되지 않습니다. 요청을 중단합니다.");
+      return;
+    }
     setUserLevel(level);
     setFieldSelect(false);
     if (level === "Test") {
@@ -136,16 +145,16 @@ function App() {
       setShowDashboard(false);
       setShowSettings(false);
       setShowRecords(false);
-        }
-        try { //분야,레벨 API 호출 
-            await axios.post("http://localhost:3001/api/save-user-fields", {
-                user_id: userID,
-                selections: [{ field, level }] // 배열형태로 저장
-            });
-            console.log("분야/레벨 저장 성공"); //콘솔로그 확인
-        } catch (err) { //에러 로그 확인
-            console.error("분야/레벨 저장 실패:", err);
-        }
+    }
+    try { //분야,레벨 API 호출 
+      await axios.post("http://localhost:3001/api/save-user-fields", {
+        user_id: userID,
+        selections: [{ field, level }] // 배열형태로 저장
+      });
+      console.log("분야/레벨 저장 성공"); //콘솔로그 확인
+    } catch (err) { //에러 로그 확인
+      console.error("분야/레벨 저장 실패:", err);
+    }
   };
 
   // 뒤로가기 핸들러
@@ -171,22 +180,20 @@ function App() {
     setShowDashboard(false);
     setShowRecommend(true);
     setShowRecords(false);
-    };
+  };
 
-    //Theme Change Handler << 위치 알아서 바꾸세요 주석지우기 X 호출순서 S,P -> T,S -> handleThemeChange
-    const handleThemeChange = (newTheme) => {
-        setTheme(newTheme);
-        localStorage.setItem("edumatrix-theme", newTheme); // 로컬 반영, 서버저장 X
+  //Theme Change Handler << 위치 알아서 바꾸세요 주석지우기 X 호출순서 S,P -> T,S -> handleThemeChange
+  const handleThemeChange = (newTheme) => {
+    setTheme(newTheme);
+    localStorage.setItem("edumatrix-theme", newTheme); // 로컬 반영, 서버저장 X
 
-        axios.post("http://localhost:3001/api/update-theme", {
-            user_id: userID,
-            theme: newTheme
-        })
-            .then(() => console.log("DB 테마 설정 변경 저장 성공"))
-            .catch((err) => console.error("DB 테마 변경 저장 실패", err)) // 컴파일 습관화
-
-    };
-
+    axios.post("http://localhost:3001/api/update-theme", {
+      user_id: userID,
+      theme: newTheme
+    })
+      .then(() => console.log("DB 테마 설정 변경 저장 성공"))
+      .catch((err) => console.error("DB 테마 변경 저장 실패", err)) // 컴파일 습관화
+  };
 
   // 사이드바 메뉴 클릭(홈/대시보드/설정 등)
   const handleSidebarMenuClick = (key) => {
@@ -235,7 +242,11 @@ function App() {
   if (!isLoggedIn && authView === "signup") {
     return (
       <Signup
-        onSignup={handleLoginSuccess}
+        // 회원가입 성공시 신규회원 플래그를 true로 세팅하고 handleLoginSuccess 호출
+        onSignup={(userData) => {
+          setIsNewUser(true);
+          handleLoginSuccess(userData);
+        }}
         onSwitchToLogin={() => setAuthView("login")}
         onBackToHome={() => setAuthView(null)}
         backArrow={backArrow}
@@ -243,23 +254,23 @@ function App() {
     );
   }
 
-    // 환경설정(마이페이지+테마) 페이지
-    if (isLoggedIn && showSettings) {
-        return (
-            <SettingsPage
-                userInfo={userInfo || {
-                    username: "받아오지 못하고있음.",
-                    name: "Error",
-                    email: "ErrorMsg@email.com",
-                    password: "********",
-                }}
-                currentTheme={theme}
-                onChangeTheme={handleThemeChange}
-                onBack={() => setShowSettings(false)}
-                backArrow={backArrow}
-            />
-        );
-    }
+  // 환경설정(마이페이지+테마) 페이지
+  if (isLoggedIn && showSettings) {
+    return (
+      <SettingsPage
+        userInfo={userInfo || {
+          username: "받아오지 못하고있음.",
+          name: "Error",
+          email: "ErrorMsg@email.com",
+          password: "********",
+        }}
+        currentTheme={theme}
+        onChangeTheme={handleThemeChange}
+        onBack={() => setShowSettings(false)}
+        backArrow={backArrow}
+      />
+    );
+  }
 
   // 학습 기록(레코드) 페이지
   if (isLoggedIn && showRecords) {

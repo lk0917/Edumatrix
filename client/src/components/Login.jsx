@@ -8,28 +8,35 @@ function Login({ onLogin, onSwitchToSignup }) {
   const [pw, setPw] = useState("");
   const [error, setError] = useState("");
 
-    const handleLogin = async (e) => {
-        e.preventDefault();
-        if (!idOrEmail || !pw) {
-            setError("이메일과 비밀번호를 입력하세요.");
-            return;
-        }
-        try {
-            const response = await axios.post("http://localhost:3001/api/login", { //db주소의 맞게 변경할것.
-                idOrEmail,
-                password: pw
-            });
-            localStorage.setItem("user_id", response.data.user.user_id);
-            const userData = response.data.user;
-            setError("");
-            onLogin(userData);
-        }
-        catch (err) {
-            console.error("로그인 실패:", err);
-            setError(err.response?.data?.message || "로그인실패");
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    if (!idOrEmail || !pw) {
+      setError("이메일과 비밀번호를 입력하세요.");
+      return;
+    }
+    try {
+      const response = await axios.post("http://localhost:3001/api/login", { //db주소의 맞게 변경할것.
+        idOrEmail,
+        password: pw
+      });
+      localStorage.setItem("user_id", response.data.user.user_id);
 
-        }
-    };
+      // 신규 회원 여부를 localStorage에서 확인 후 전달 (Signup에서 true로 저장)
+      const isNewUser = localStorage.getItem("isNewUser") === "true";
+      localStorage.removeItem("isNewUser"); // 한 번 사용 후 바로 제거
+
+      const userData = {
+        ...response.data.user,
+        isNewUser // App에서 활용 가능하도록 전달
+      };
+      setError("");
+      onLogin(userData);
+    }
+    catch (err) {
+      console.error("로그인 실패:", err);
+      setError(err.response?.data?.message || "로그인실패");
+    }
+  };
 
   return (
     <div className="login-root">
