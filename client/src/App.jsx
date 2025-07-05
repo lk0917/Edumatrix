@@ -62,24 +62,7 @@ function App() {
   const [userInfo, setUserInfo] = useState(null); // 초기값 NULL 설정
   const [userID, setUserId] = useState(null); // 로그인한 id 저장
 
-  const handleLoginSuccess1 = async () => { //로그인 핸들러(예전 버전)
-    setIsLoggedIn(true);
-    setAuthView(null);
-    setFieldSelect(true);
-
-    const res = await axios.get("http://localhost:3001/api/userinfo?user_id=1");
-    setUserInfo(res.data); // 사용자 정보 가져옴
-
-    setUserId(res.data.user_id); // 로그인한 사용자 DB -> ID 저장
-  };
-
-  // 테마가 바뀔 때마다 html data-theme 동기화
-  useEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme);
-    localStorage.setItem("edumatrix-theme", theme);
-  }, [theme]);
-
-  // 로그인/회원가입 성공 핸들러
+  // 로그인/회원가입 성공 핸들러 (최신 버전만 남김)
   const handleLoginSuccess = async (userData) => {
     setUserId(userData.user_id);
     setIsLoggedIn(true);
@@ -109,6 +92,12 @@ function App() {
       console.error("사용자 정보 불러오기 실패", err);
     }
   };
+
+  // 테마가 바뀔 때마다 html data-theme 동기화
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("edumatrix-theme", theme);
+  }, [theme]);
 
   const handleLogout = () => {
     setIsLoggedIn(false);
@@ -390,7 +379,7 @@ function App() {
   if (isLoggedIn && showRecommend) {
     return (
       <Recommendation
-        field={userField}
+        field={userField}   // <--- 추가: 선택한 분야(영어/코딩 등)를 prop으로 넘김
         level={userLevel}
         onBack={handleBackToSelectFromRecommend}
         backArrow={backArrow}
@@ -398,6 +387,7 @@ function App() {
           setShowRecommend(false);
           setShowDashboard(true);
         }}
+        onMenuClick={handleSidebarMenuClick}  // <<< [핵심] 꼭 넘기기!
       />
     );
   }
