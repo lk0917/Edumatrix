@@ -17,6 +17,15 @@ import icon1 from "./assets/icon1.png";
 import backArrow from "./assets/Arrow left.png";
 import axios from "axios"; // DB관련 에셋
 
+// key → label 매핑
+const KEY_TO_LABEL = {
+  python: "Python",
+  cpp: "C/C++",
+  java: "Java",
+  htmlcss: "HTML/CSS",
+  javascript: "JavaScript",
+};
+
 // 기존 SettingsPage 함수 정의는 삭제 또는 주석처리(중복방지)
 // function SettingsPage({ currentTheme, onChangeTheme, onBack, backArrow }) { ... }
 
@@ -48,7 +57,9 @@ function App() {
   const [authView, setAuthView] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [fieldSelect, setFieldSelect] = useState(false);
-  const [userField, setUserField] = useState(null);
+
+  // 필드/언어 상태: 영어면 문자열, 프로그래밍이면 객체 { field, languages }
+  const [userField, setUserField] = useState(null);  
   const [userLevel, setUserLevel] = useState(null);
   const [showRecommend, setShowRecommend] = useState(false);
   const [showLevelTest, setShowLevelTest] = useState(false);
@@ -112,17 +123,43 @@ function App() {
     setShowRecords(false);
   };
 
-  const handleFieldSelected = (field) => setUserField(field);
+  const handleFieldSelected = (fieldOrObj) => {
+    // 영어: "english", 프로그래밍: { field: "programming", languages: [...] }
+    setUserField(fieldOrObj);
+  };
 
   // 분야, 레벨 선택 핸들러 //
-  const handleLevelSelected = async (field, level) => {
+  const handleLevelSelected = async (fieldOrObj, level) => {
     if (!userID) {
       console.warn("ID가 확인되지 않습니다. 요청을 중단합니다.");
       return;
     }
+
     setUserLevel(level);
     setFieldSelect(false);
-    if (level === "Test") {
+
+    // DB 저장용: selections에 field와 필요시 languages 포함
+    let dbField, dbLanguages;
+    if (typeof fieldOrObj === "string") {
+      dbField = fieldOrObj;
+      dbLanguages = null;
+    } else if (typeof fieldOrObj === "object" && fieldOrObj.field === "programming") {
+      dbField = "programming";
+      dbLanguages = fieldOrObj.languages; // 배열 (key값)
+    }
+
+    // 레벨 분기(테스트/추천)
+    if (level === "test") {
+      // -------- [여기서만] userField에 label 변환값을 저장 -----------
+      if (typeof fieldOrObj === "object" && fieldOrObj.field === "programming") {
+        // label로 변환
+        setUserField({
+          ...fieldOrObj,
+          languages: fieldOrObj.languages.map(k => KEY_TO_LABEL[k] || k)
+        });
+      } else {
+        setUserField(fieldOrObj);
+      }
       setShowLevelTest(true);
       setShowRecommend(false);
       setShowDashboard(false);
@@ -135,13 +172,17 @@ function App() {
       setShowSettings(false);
       setShowRecords(false);
     }
-    try { //분야,레벨 API 호출 
+
+    // selections 필드에 언어 정보까지 함께 저장(백엔드 필요시 확장)
+    try {
       await axios.post("http://localhost:3001/api/save-user-fields", {
         user_id: userID,
-        selections: [{ field, level }] // 배열형태로 저장
+        selections: dbLanguages
+          ? [{ field: dbField, languages: dbLanguages, level }]
+          : [{ field: dbField, level }]
       });
-      console.log("분야/레벨 저장 성공"); //콘솔로그 확인
-    } catch (err) { //에러 로그 확인
+      console.log("분야/레벨 저장 성공");
+    } catch (err) {
       console.error("분야/레벨 저장 실패:", err);
     }
   };
@@ -181,7 +222,7 @@ function App() {
       theme: newTheme
     })
       .then(() => console.log("DB 테마 설정 변경 저장 성공"))
-      .catch((err) => console.error("DB 테마 변경 저장 실패", err)) // 컴파일 습관화
+      .catch((err) => console.error("DB 테마 변경 저장 실패", err))
   };
 
   // 사이드바 메뉴 클릭(홈/대시보드/설정 등)
@@ -361,6 +402,7 @@ function App() {
 
   // 레벨테스트(퀴즈)
   if (isLoggedIn && showLevelTest) {
+    // userField(문자열 or {field, languages}) 그대로 넘김
     return (
       <LevelTest
         field={userField}
@@ -379,7 +421,7 @@ function App() {
   if (isLoggedIn && showRecommend) {
     return (
       <Recommendation
-        field={userField}   // <--- 추가: 선택한 분야(영어/코딩 등)를 prop으로 넘김
+        field={userField}   // <--- { field, languages } or "english"
         level={userLevel}
         onBack={handleBackToSelectFromRecommend}
         backArrow={backArrow}
@@ -387,7 +429,7 @@ function App() {
           setShowRecommend(false);
           setShowDashboard(true);
         }}
-        onMenuClick={handleSidebarMenuClick}  // <<< [핵심] 꼭 넘기기!
+        onMenuClick={handleSidebarMenuClick} // <-- [핵심] 반드시 직접 전달!
       />
     );
   }
