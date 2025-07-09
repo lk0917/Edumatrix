@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import SidebarMenu from "./SidebarMenu";
 import ChatbotSidebar from "./ChatbotSidebar";
 import "../index.css";
@@ -27,60 +27,59 @@ function fieldToCategory(field) {
   return "기타";
 }
 
-function Recommendation({ onMenuClick, field, onBack, backArrow: propBackArrow }) {
-  // ---- 사이드바/챗봇 상태 선언 (필수!!) ----
-  const [leftOpen, setLeftOpen] = useState(false);
-  const [rightOpen, setRightOpen] = useState(false);
-
-  // 추천 데이터 상태
-  const [recommendations, setRecommendations] = useState([]);
-  // field를 받아서 카테고리 기본값 설정
-  const initialCategory = useMemo(() => fieldToCategory(field), [field]);
-  const [selectedCategory, setSelectedCategory] = useState(initialCategory);
-  const [showDetail, setShowDetail] = useState(null);
-  const [showAcceptModal, setShowAcceptModal] = useState(false);
-  const [selectedRecommendation, setSelectedRecommendation] = useState(null);
-
-  // 카테고리 목록(선택 분야가 맨 앞에 오도록)
-  const allCategories = useMemo(() => {
-    // 항상 "전체" 포함, 분야가 있을 경우 맨 앞, 그다음 고정된 나머지 카테고리
-    const base = ["프로그래밍",  "영어" , "기타"];
-    const mainCat = fieldToCategory(field);
-    const arr = ["전체"];
-    if (mainCat && mainCat !== "전체") arr.push(mainCat);
-    arr.push(...base.filter(cat => cat !== mainCat));
-    // 중복 방지
-    return [...new Set(arr)];
-  }, [field]);
-
-  // defaultRecs를 useMemo로 고정 (ESLint 경고 해결)
-  const defaultRecs = useMemo(() => [
+// ✅ 등급별 추천 항목 데이터
+const levelRecs = {
+  beginner: [
     {
-      id: 1,
-      title: "파이썬 기초 완성하기",
-      subject: "프로그래밍",
-      category: "프로그래밍",
-      summary: "파이썬 기본 문법과 데이터 구조를 학습하여 프로그래밍 기초를 다집니다.",
-      time: "주 5시간",
+      id: 101,
+      title: "영어 알파벳부터 시작",
+      subject: "영어",
+      category: "영어",
+      level: "beginner",
+      summary: "알파벳부터 차근차근 배우는 왕초보 영어 과정입니다.",
+      time: "주 2시간",
       difficulty: "초급",
-      duration: "4주",
+      duration: "2주",
       plan: [
-        { label: "기초 문법", days: ["월", "화", "수"], time: "2시간" },
-        { label: "실습 문제", days: ["목", "금"], time: "2시간" },
-        { label: "복습 및 정리", days: ["토"], time: "1시간" },
+        { label: "알파벳 익히기", days: ["월", "화"], time: "1시간" },
+        { label: "기초 단어 따라 쓰기", days: ["목"], time: "1시간" },
       ],
-      reason: "최근 프로그래밍에 대한 관심도가 높아지고 있으며, 파이썬은 입문자에게 적합한 언어입니다.",
+      reason: "기초부터 배우고 싶은 분을 위한 입문 강의입니다.",
       progress: 0,
-      goals: 3,
-      due: "2024-06-15",
-      tags: ["초급", "실습중심", "4주완성"],
+      goals: 2,
+      due: "2024-08-01",
+      tags: ["왕초보", "기초"],
       createdAt: getTimeString(new Date()),
     },
     {
-      id: 2,
+      id: 102,
+      title: "파이썬 완전 처음",
+      subject: "프로그래밍",
+      category: "프로그래밍",
+      level: "beginner",
+      summary: "코딩 경험이 없어도 따라하는 파이썬 기초 튜토리얼입니다.",
+      time: "주 3시간",
+      difficulty: "초급",
+      duration: "3주",
+      plan: [
+        { label: "변수와 출력", days: ["월", "수"], time: "1시간" },
+        { label: "자료형과 리스트", days: ["금"], time: "1시간" },
+      ],
+      reason: "프로그래밍 첫 시작자에게 적합합니다.",
+      progress: 0,
+      goals: 3,
+      due: "2024-08-10",
+      tags: ["입문", "실습중심"],
+      createdAt: getTimeString(new Date()),
+    },
+  ],
+  intermediate: [
+    {
+      id: 201,
       title: "영어 토익 준비",
       subject: "영어",
       category: "영어",
+      level: "intermediate",
       summary: "토익 시험을 대비하여 영어 실력을 체계적으로 향상시킵니다.",
       time: "주 4시간",
       difficulty: "중급",
@@ -90,44 +89,125 @@ function Recommendation({ onMenuClick, field, onBack, backArrow: propBackArrow }
         { label: "듣기 연습", days: ["수"], time: "1시간" },
         { label: "독해 연습", days: ["목"], time: "1시간" },
       ],
-      reason: "취업 준비를 위해 토익 점수 향상이 필요하며, 체계적인 학습 계획이 도움이 될 것입니다.",
+      reason: "취업 준비를 위해 토익 점수 향상이 필요합니다.",
       progress: 0,
       goals: 5,
-      due: "2024-08-10",
+      due: "2024-08-20",
       tags: ["중급", "시험준비", "8주완성"],
       createdAt: getTimeString(new Date()),
     },
-  ], []);
+    {
+      id: 202,
+      title: "파이썬 기초 완성하기",
+      subject: "프로그래밍",
+      category: "프로그래밍",
+      level: "intermediate",
+      summary: "파이썬 기본 문법과 데이터 구조를 학습하여 프로그래밍 기초를 다집니다.",
+      time: "주 5시간",
+      difficulty: "초급",
+      duration: "4주",
+      plan: [
+        { label: "기초 문법", days: ["월", "화", "수"], time: "2시간" },
+        { label: "실습 문제", days: ["목", "금"], time: "2시간" },
+        { label: "복습 및 정리", days: ["토"], time: "1시간" },
+      ],
+      reason: "최근 프로그래밍에 대한 관심도가 높아지고 있습니다.",
+      progress: 0,
+      goals: 3,
+      due: "2024-09-01",
+      tags: ["초급", "실습중심", "4주완성"],
+      createdAt: getTimeString(new Date()),
+    },
+  ],
+  advanced: [
+    {
+      id: 301,
+      title: "비즈니스 영어 발표 마스터",
+      subject: "영어",
+      category: "영어",
+      level: "advanced",
+      summary: "프레젠테이션 및 비즈니스 상황에서 바로 쓰는 실전 영어 과정입니다.",
+      time: "주 6시간",
+      difficulty: "고급",
+      duration: "5주",
+      plan: [
+        { label: "비즈니스 표현", days: ["월", "수"], time: "2시간" },
+        { label: "발표 실습", days: ["금"], time: "2시간" },
+      ],
+      reason: "비즈니스 실무에 영어를 바로 활용하고자 하는 분에게 추천합니다.",
+      progress: 0,
+      goals: 4,
+      due: "2024-08-30",
+      tags: ["고급", "실전"],
+      createdAt: getTimeString(new Date()),
+    },
+    {
+      id: 302,
+      title: "AI 프로젝트 개발 실전",
+      subject: "프로그래밍",
+      category: "프로그래밍",
+      level: "advanced",
+      summary: "AI(머신러닝) 프로젝트를 직접 설계하고 구현하는 심화 과정입니다.",
+      time: "주 8시간",
+      difficulty: "고급",
+      duration: "6주",
+      plan: [
+        { label: "데이터 분석/전처리", days: ["월", "화"], time: "2시간" },
+        { label: "모델 설계/구현", days: ["목", "금"], time: "2시간" },
+        { label: "최적화 및 발표", days: ["토"], time: "2시간" },
+      ],
+      reason: "코딩 실력이 상급인 분을 위한 고급 프로젝트 실습 과정입니다.",
+      progress: 0,
+      goals: 5,
+      due: "2024-09-10",
+      tags: ["고급", "AI", "실전"],
+      createdAt: getTimeString(new Date()),
+    },
+  ]
+};
 
-  // 분야가 바뀔 때마다 카테고리 초기화
-  useEffect(() => {
-    setSelectedCategory(initialCategory);
-  }, [initialCategory]);
+function Recommendation({ onMenuClick, field, level, onBack, backArrow: propBackArrow }) {
+  const [leftOpen, setLeftOpen] = useState(false);
+  const [rightOpen, setRightOpen] = useState(false);
 
-  useEffect(() => {
-    setRecommendations(defaultRecs);
-  }, [defaultRecs]);
+  const initialCategory = useMemo(() => fieldToCategory(field), [field]);
+  const [selectedCategory, setSelectedCategory] = useState(initialCategory);
+  const [showDetail, setShowDetail] = useState(null);
+  const [showAcceptModal, setShowAcceptModal] = useState(false);
+  const [selectedRecommendation, setSelectedRecommendation] = useState(null);
 
-  // 현재 카테고리의 추천 목록만
-  const filteredRecommendations = recommendations.filter((rec) =>
-    selectedCategory === "전체" || rec.category === selectedCategory
-  );
+  // 등급, 분야에 해당하는 추천 데이터
+  const recommendations = useMemo(() => {
+    // 예외처리: level 정보 없으면 intermediate로 대체
+    const safeLevel = levelRecs[level] ? level : "intermediate";
+    return (levelRecs[safeLevel] || []).filter(
+      (rec) => rec.category === fieldToCategory(field)
+    );
+  }, [level, field]);
 
-  // 추천 수락 처리
+  // 선택된 분야만 카테고리로 표시
+  const allCategories = useMemo(() => {
+    const mainCat = fieldToCategory(field);
+    return mainCat ? [mainCat] : ["전체"];
+  }, [field]);
+
+  // 선택된 카테고리의 추천만 필터링(사실상 하나)
+  const filteredRecommendations = useMemo(() => {
+    const mainCat = fieldToCategory(field);
+    return recommendations.filter((rec) => rec.category === selectedCategory && rec.category === mainCat);
+  }, [recommendations, selectedCategory, field]);
+
   const handleAccept = (recommendation) => {
     setSelectedRecommendation(recommendation);
     setShowAcceptModal(true);
   };
 
-  // 추천 수락 확인
   const confirmAccept = () => {
-    // 여기에 실제 수락 로직 추가
     alert(`${selectedRecommendation.title} 추천을 수락했습니다!`);
     setShowAcceptModal(false);
     setSelectedRecommendation(null);
   };
 
-  // 진행률 표시 컴포넌트
   const ProgressBar = ({ progress }) => (
     <div style={{
       width: "100%",
@@ -147,7 +227,6 @@ function Recommendation({ onMenuClick, field, onBack, backArrow: propBackArrow }
     </div>
   );
 
-  // 태그 컴포넌트
   const Tag = ({ children }) => (
     <span style={{
       background: "var(--button-alt-bg)",
@@ -164,20 +243,17 @@ function Recommendation({ onMenuClick, field, onBack, backArrow: propBackArrow }
     </span>
   );
 
-  // 실제로 부모로부터 받은 onMenuClick 콜백을 SidebarMenu에 전달해야 한다!
   const handleSidebarMenuClick = (key) => {
-    setLeftOpen(false); // 메뉴 닫기
-    if (onMenuClick) onMenuClick(key); // 반드시 부모(App)의 상태 변경!
+    setLeftOpen(false);
+    if (onMenuClick) onMenuClick(key);
   };
 
   return (
     <div className="edumatrix-root" style={{ color: "var(--text)", background: "var(--bg)", minHeight: "100vh" }}>
-      {/* ===== 상단 네비/메뉴/챗봇 버튼(고정) ===== */}
       <header className="topbar">
         <button className="sidebar-toggle" onClick={() => setLeftOpen(true)}>
           <span role="img" aria-label="메뉴">☰</span>
         </button>
-        {/* 뒤로가기(있을 경우) */}
         {onBack && (
           <button
             className="back-btn"
@@ -204,53 +280,42 @@ function Recommendation({ onMenuClick, field, onBack, backArrow: propBackArrow }
         </button>
       </header>
 
-      {/* ===== 사이드/챗봇 ===== */}
       <SidebarMenu
         open={leftOpen}
         onClose={() => setLeftOpen(false)}
-        onMenuClick={handleSidebarMenuClick} // 여기서 반드시 부모 콜백으로!
+        onMenuClick={handleSidebarMenuClick}
       />
       <ChatbotSidebar open={rightOpen} onClose={() => setRightOpen(false)} />
 
-      {/* ===== 네비게이션 바 (카테고리) ===== */}
-      <nav
-        style={{
-          width: "100vw",
-          background: "var(--sidebar-bg)",
-          borderBottom: "1.2px solid var(--input-border)",
-          position: "sticky",
-          top: 0,
-          zIndex: 5,
-          padding: "0.5rem 0",
+      {/* ===== 카테고리 네비게이션 ===== */}
+      <nav style={{
+        width: "100vw",
+        background: "var(--sidebar-bg)",
+        borderBottom: "1.2px solid var(--input-border)",
+        position: "sticky",
+        top: 0,
+        zIndex: 5,
+        padding: "0.5rem 0",
+        display: "flex",
+        justifyContent: "center",
+      }}>
+        <div style={{
           display: "flex",
-          justifyContent: "center",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 8,
-            color: "var(--sidebar-title)",
-            maxWidth: 540,
-            margin: "0 auto",
-            width: "100%",
-            flexWrap: "wrap",
-            justifyContent: "center"
-          }}
-        >
+          alignItems: "center",
+          gap: 8,
+          color: "var(--sidebar-title)",
+          maxWidth: 540,
+          margin: "0 auto",
+          width: "100%",
+          flexWrap: "wrap",
+          justifyContent: "center"
+        }}>
           {allCategories.map((cat) => (
             <button
               key={cat}
               style={{
-                background:
-                  selectedCategory === cat
-                    ? "var(--button-bg)"
-                    : "var(--button-alt-bg, #f3f5fa)",
-                color:
-                  selectedCategory === cat
-                    ? "var(--button-text)"
-                    : "var(--sidebar-title, #444)",
+                background: selectedCategory === cat ? "var(--button-bg)" : "var(--button-alt-bg, #f3f5fa)",
+                color: selectedCategory === cat ? "var(--button-text)" : "var(--sidebar-title, #444)",
                 border: "none",
                 borderRadius: 8,
                 padding: "0.5em 1.15em",
@@ -313,10 +378,10 @@ function Recommendation({ onMenuClick, field, onBack, backArrow: propBackArrow }
                     {rec.title}
                   </div>
                   <span style={{
-                    background: rec.difficulty === "초급" ? "#e8f5e8" : 
-                              rec.difficulty === "중급" ? "#fff3cd" : "#ffe6e6",
-                    color: rec.difficulty === "초급" ? "#2d5a2d" : 
-                           rec.difficulty === "중급" ? "#856404" : "#721c24",
+                    background: rec.difficulty === "초급" ? "#e8f5e8" :
+                      rec.difficulty === "중급" ? "#fff3cd" : "#ffe6e6",
+                    color: rec.difficulty === "초급" ? "#2d5a2d" :
+                      rec.difficulty === "중급" ? "#856404" : "#721c24",
                     padding: "0.2em 0.6em",
                     borderRadius: 12,
                     fontSize: "0.8rem",
@@ -390,7 +455,7 @@ function Recommendation({ onMenuClick, field, onBack, backArrow: propBackArrow }
         )}
       </main>
 
-      {/* ===== 추천 상세보기/수락모달 등 기존 코드 동일 ===== */}
+      {/* ===== 추천 상세보기 모달 ===== */}
       {showDetail && (
         <div
           style={{
@@ -445,7 +510,7 @@ function Recommendation({ onMenuClick, field, onBack, backArrow: propBackArrow }
               border: "1px solid var(--input-border)",
             }}>
               <div style={{ fontWeight: 600, marginBottom: 8, color: "var(--text)" }}>
-                📋 학습 계획
+                학습 계획
               </div>
               {showDetail.plan.map((item, index) => (
                 <div key={index} style={{
@@ -532,7 +597,7 @@ function Recommendation({ onMenuClick, field, onBack, backArrow: propBackArrow }
         </div>
       )}
 
-      {/* ===== 수락 확인 모달 ===== */}
+      {/* ===== 추천 수락 확인 모달 ===== */}
       {showAcceptModal && selectedRecommendation && (
         <div
           style={{
