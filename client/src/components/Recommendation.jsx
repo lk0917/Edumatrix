@@ -22,14 +22,16 @@ function getTimeString(date) {
 // 분야 필드명(영어/코딩 등)을 추천 카테고리 이름(언어/프로그래밍 등)으로 변환
 function fieldToCategory(field) {
   if (!field) return "전체";
+  if (typeof field === "object" && field.field === "programming") return "프로그래밍";
   if (field === "english" || field === "영어") return "영어";
   if (field === "programming" || field === "코딩" || field === "프로그래밍") return "프로그래밍";
   return "기타";
 }
 
-// ✅ 등급별 추천 항목 데이터
+// 등급별 추천 항목 데이터
 const levelRecs = {
   beginner: [
+    // ... 기존 예시
     {
       id: 101,
       title: "영어 알파벳부터 시작",
@@ -176,9 +178,12 @@ function Recommendation({ onMenuClick, field, level, onBack, backArrow: propBack
   const [showAcceptModal, setShowAcceptModal] = useState(false);
   const [selectedRecommendation, setSelectedRecommendation] = useState(null);
 
+  // === 진행중(수락된) 학습 일정 ===
+  const [acceptedSchedules, setAcceptedSchedules] = useState([]);
+  const [showSchedulesModal, setShowSchedulesModal] = useState(false);
+
   // 등급, 분야에 해당하는 추천 데이터
   const recommendations = useMemo(() => {
-    // 예외처리: level 정보 없으면 intermediate로 대체
     const safeLevel = levelRecs[level] ? level : "intermediate";
     return (levelRecs[safeLevel] || []).filter(
       (rec) => rec.category === fieldToCategory(field)
@@ -191,7 +196,7 @@ function Recommendation({ onMenuClick, field, level, onBack, backArrow: propBack
     return mainCat ? [mainCat] : ["전체"];
   }, [field]);
 
-  // 선택된 카테고리의 추천만 필터링(사실상 하나)
+  // 선택된 카테고리의 추천만 필터링
   const filteredRecommendations = useMemo(() => {
     const mainCat = fieldToCategory(field);
     return recommendations.filter((rec) => rec.category === selectedCategory && rec.category === mainCat);
@@ -202,8 +207,15 @@ function Recommendation({ onMenuClick, field, level, onBack, backArrow: propBack
     setShowAcceptModal(true);
   };
 
+  // === [수락 시 진행중 일정에 추가] ===
   const confirmAccept = () => {
-    alert(`${selectedRecommendation.title} 추천을 수락했습니다!`);
+    if (selectedRecommendation) {
+      setAcceptedSchedules((prev) =>
+        prev.some((item) => item.id === selectedRecommendation.id)
+          ? prev
+          : [...prev, selectedRecommendation]
+      );
+    }
     setShowAcceptModal(false);
     setSelectedRecommendation(null);
   };
@@ -247,6 +259,87 @@ function Recommendation({ onMenuClick, field, level, onBack, backArrow: propBack
     setLeftOpen(false);
     if (onMenuClick) onMenuClick(key);
   };
+
+  // === [내 학습 일정 모달 컴포넌트] ===
+  const renderSchedulesModal = () => (
+    <div
+      style={{
+        background: "rgba(16,24,31,0.16)",
+        position: "fixed",
+        inset: 0,
+        zIndex: 120,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+      onClick={() => setShowSchedulesModal(false)}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          background: "var(--card-bg)",
+          borderRadius: 18,
+          boxShadow: "var(--card-shadow)",
+          width: 560,
+          maxWidth: "92vw",
+          maxHeight: "90vh",
+          padding: "2rem 2rem 1.6rem 2rem",
+          overflow: "auto"
+        }}
+      >
+        <h3 style={{ margin: 0, marginBottom: 18, color: "var(--sidebar-title)" }}>진행중 학습 일정</h3>
+        {acceptedSchedules.length === 0 ? (
+          <div style={{ color: "#888", textAlign: "center", padding: "2.2rem 0" }}>
+            아직 수락한 학습 일정이 없습니다.<br />
+            <span style={{ fontSize: "0.93rem" }}>추천에서 [수락하기]를 눌러 일정에 추가하세요.</span>
+          </div>
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+            {acceptedSchedules.map((item) => (
+              <div key={item.id} style={{
+                background: "var(--input-bg)",
+                borderRadius: 11,
+                border: "1.2px solid var(--input-border)",
+                padding: "1.1rem 1rem",
+                display: "flex",
+                flexDirection: "column",
+                gap: 6
+              }}>
+                <div style={{ fontWeight: 700, fontSize: "1.06rem" }}>{item.title}</div>
+                <div style={{ color: "var(--sidebar-title)", fontSize: "0.96rem" }}>{item.summary}</div>
+                <div style={{ fontSize: "0.89rem", color: "#456", margin: "4px 0" }}>
+                  {item.duration} | 목표 {item.goals}개 | 마감 {item.due}
+                </div>
+                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                  {item.tags.map((tag, idx) => (
+                    <Tag key={idx}>{tag}</Tag>
+                  ))}
+                </div>
+                <ProgressBar progress={item.progress} />
+              </div>
+            ))}
+          </div>
+        )}
+        <div style={{ textAlign: "right", marginTop: 16 }}>
+          <button
+            style={{
+              background: "#ecf1f5",
+              color: "#666",
+              border: "none",
+              borderRadius: 8,
+              padding: "0.45em 1.3em",
+              fontWeight: 500,
+              fontSize: "1rem",
+              cursor: "pointer",
+            }}
+            onClick={() => setShowSchedulesModal(false)}
+          >
+            닫기
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <div className="edumatrix-root" style={{ color: "var(--text)", background: "var(--bg)", minHeight: "100vh" }}>
@@ -454,6 +547,37 @@ function Recommendation({ onMenuClick, field, level, onBack, backArrow: propBack
           </div>
         )}
       </main>
+
+      {/* === [내 학습 일정 보기 버튼 & 모달] === */}
+      <div style={{
+        width: "100%",
+        display: "flex",
+        justifyContent: "center",
+        position: "fixed",
+        bottom: 20,
+        left: 0,
+        zIndex: 12
+      }}>
+        <button
+          className="login-btn"
+          style={{
+            width: 180,
+            fontSize: "1rem",
+            fontWeight: 600,
+            borderRadius: 12,
+            boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+            padding: "0.8em 0",
+            background: "var(--button-bg)",
+            color: "var(--button-text)",
+            border: "none",
+            cursor: "pointer",
+          }}
+          onClick={() => setShowSchedulesModal(true)}
+        >
+          내 학습 일정 보기
+        </button>
+      </div>
+      {showSchedulesModal && renderSchedulesModal()}
 
       {/* ===== 추천 상세보기 모달 ===== */}
       {showDetail && (

@@ -1102,6 +1102,89 @@ body {
 .study-notes           { grid-area: study-notes; }
 .feedback              { grid-area: feedback; }
 
+/* ===== LearningSchedule 대시보드 영역 그리드 연결 ===== */
+.learning-schedule { grid-area: learning-schedule; }
+
+/* ===== LearningSchedule 대시보드 카드 스타일 ===== */
+.learning-schedule {
+  min-height: 210px;
+  background: linear-gradient(120deg, var(--card-bg) 70%, var(--sidebar-hover) 100%);
+  border-radius: 1.3rem;
+  box-shadow: var(--card-shadow);
+  padding: 1.5rem 1.3rem 1.1rem 1.3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  transition: box-shadow 0.18s, background 0.22s, color 0.22s;
+  border: 1.1px solid var(--sidebar-border);
+  cursor: pointer;
+  position: relative;
+  animation: fadeIn 0.7s;
+}
+.learning-schedule:hover {
+  box-shadow: 0 8px 32px rgba(90,120,240,0.14);
+  background: linear-gradient(120deg, var(--sidebar-hover) 70%, var(--card-bg) 100%);
+  z-index: 2;
+  transform: translateY(-3px) scale(1.012);
+}
+.learning-schedule h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--sidebar-title);
+  margin: 0 0 0.6rem 0;
+  letter-spacing: -0.01em;
+}
+.learning-schedule-list {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  margin-top: 0.6rem;
+  overflow-y: auto;
+}
+.learning-schedule-item {
+  background: var(--input-bg);
+  border-radius: 10px;
+  padding: 0.75rem 1.1rem;
+  font-size: 1.01rem;
+  font-weight: 500;
+  color: var(--text);
+  box-shadow: 0 1px 6px rgba(80,130,180,0.08);
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  justify-content: space-between;
+}
+.learning-schedule-item .schedule-title {
+  font-weight: 700;
+  color: var(--sidebar-title);
+  font-size: 1.01rem;
+}
+.learning-schedule-item .schedule-progress-bar {
+  flex: 1;
+  height: 0.54rem;
+  background: #e3ecfb;
+  border-radius: 0.5rem;
+  margin: 0 0.6rem;
+  position: relative;
+  min-width: 48px;
+  max-width: 110px;
+}
+.learning-schedule-item .schedule-progress-fill {
+  height: 100%;
+  background: #3a6ff7;
+  border-radius: 0.5rem;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+.learning-schedule-item .schedule-due {
+  color: #b2693d;
+  font-size: 0.98rem;
+  font-weight: 500;
+}
+
+
 /* ===== 특별 UI 요소(커스텀 컴포넌트 영역 등) ===== */
 .performance {
   min-height: 260px;
