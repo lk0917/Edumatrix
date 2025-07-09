@@ -121,6 +121,7 @@ function App() {
     setShowDashboard(false);
     setShowSettings(false);
     setShowRecords(false);
+    setUserId(null); // ← 로그아웃 시 id도 초기화!
   };
 
   const handleFieldSelected = (fieldOrObj) => {
@@ -235,16 +236,18 @@ function App() {
       setShowSettings(false);
       setShowRecords(false);
     } else if (key === "home") {
+      // 홈으로 이동: 상태만 초기화 (로그인 유지, id 유지)
       setShowDashboard(false);
       setShowRecommend(false);
       setShowLevelTest(false);
       setFieldSelect(false);
       setShowSettings(false);
       setShowRecords(false);
-      setIsLoggedIn(false);
       setAuthView(null);
       setUserField(null);
       setUserLevel(null);
+      // setIsLoggedIn(false);  // ← 삭제! 홈 이동 시 로그인 유지
+      // setUserId(null);       // ← 삭제! 홈 이동 시 id 유지
     } else if (key === "settings") {
       setShowSettings(true);
       setShowDashboard(false);
