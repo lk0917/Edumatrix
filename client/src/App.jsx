@@ -75,7 +75,9 @@ function App() {
 
   // 로그인/회원가입 성공 핸들러 (최신 버전만 남김)
   const handleLoginSuccess = async (userData) => {
-    setUserId(userData.user_id);
+      setUserId(userData.user_id);
+      localStorage.setItem("user_id", userData.user_id);
+
     setIsLoggedIn(true);
     setAuthView(null);
     setUserField(null);
@@ -121,7 +123,8 @@ function App() {
     setShowDashboard(false);
     setShowSettings(false);
     setShowRecords(false);
-    setUserId(null); // ← 로그아웃 시 id도 초기화!
+      setUserId(null); // ← 로그아웃 시 id도 초기화!
+      localStorage.removeItem("user_id");
   };
 
   const handleFieldSelected = (fieldOrObj) => {
