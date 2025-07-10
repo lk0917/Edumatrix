@@ -1,4 +1,3 @@
-// 신버전
 import React, { useState, useEffect } from "react";
 import SidebarMenu from "./components/SidebarMenu";
 import ChatbotSidebar from "./components/ChatbotSidebar";
@@ -25,9 +24,6 @@ const KEY_TO_LABEL = {
   htmlcss: "HTML/CSS",
   javascript: "JavaScript",
 };
-
-// 기존 SettingsPage 함수 정의는 삭제 또는 주석처리(중복방지)
-// function SettingsPage({ currentTheme, onChangeTheme, onBack, backArrow }) { ... }
 
 // 다크모드 자동 대응 로고 컴포넌트 (import 방식)
 function Logo() {
@@ -73,10 +69,74 @@ function App() {
   const [userInfo, setUserInfo] = useState(null); // 초기값 NULL 설정
   const [userID, setUserId] = useState(null); // 로그인한 id 저장
 
+  // ------ 일정(진행률, 수락 등) 통합 상태 ------
+  // 모든 학습 일정 데이터를 App에서 관리
+  const [learningSchedules, setLearningSchedules] = useState([]);
+
+  // 일정 받아오기 예시 (로그인 시, 실제로는 서버에서 불러오기)
+  useEffect(() => {
+    if (isLoggedIn) {
+      // 예시: 서버에서 받아오는 구조 (실제로는 axios.get)
+      axios.get(`http://localhost:3001/api/schedules?user_id=${userID}`)
+        .then(res => setLearningSchedules(res.data))
+        .catch(() => {
+          // 더미 데이터 (초기값)
+          setLearningSchedules([
+            {
+              id: "1",
+              title: "파이썬 기초 완성하기",
+              summary: "파이썬 기본 문법과 데이터 구조를 학습하여 프로그래밍 기초를 다집니다.",
+              time: "주 5시간",
+              duration: "4주",
+              goals: 3,
+              tags: ["초급", "실습중심", "4주완성"],
+              progress: 0,
+              accepted: false,      // 수락 상태
+              completed: false,
+              isRecommendation: true,
+              level: "초급"
+            }
+          ]);
+        });
+    }
+  }, [isLoggedIn, userID]);
+
+  // 일정 수락 핸들러 (버튼 → 진행중)
+  const handleAcceptSchedule = (id) => {
+    setLearningSchedules(schedules =>
+      schedules.map(s => s.id === id ? { ...s, accepted: true } : s)
+    );
+  };
+
+  // 일정 진행률 변경 핸들러 (예: 진행률 바 조작)
+  const handleProgressChange = (id, progress) => {
+    setLearningSchedules(schedules =>
+      schedules.map(s =>
+        s.id === id ? { ...s, progress: progress > 100 ? 100 : progress } : s
+      )
+    );
+  };
+
+  // 일정 완료 핸들러
+  const handleCompleteSchedule = (id) => {
+    setLearningSchedules(schedules =>
+      schedules.map(s =>
+        s.id === id ? { ...s, completed: true, progress: 100 } : s
+      )
+    );
+  };
+
+  // 일정 삭제 핸들러
+  const handleRemoveSchedule = (id) => {
+    setLearningSchedules(schedules =>
+      schedules.filter(s => s.id !== id)
+    );
+  };
+
   // 로그인/회원가입 성공 핸들러 (최신 버전만 남김)
   const handleLoginSuccess = async (userData) => {
-      setUserId(userData.user_id);
-      localStorage.setItem("user_id", userData.user_id);
+    setUserId(userData.user_id);
+    localStorage.setItem("user_id", userData.user_id);
 
     setIsLoggedIn(true);
     setAuthView(null);
@@ -123,16 +183,14 @@ function App() {
     setShowDashboard(false);
     setShowSettings(false);
     setShowRecords(false);
-      setUserId(null); // ← 로그아웃 시 id도 초기화!
-      localStorage.removeItem("user_id");
+    setUserId(null); // ← 로그아웃 시 id도 초기화!
+    localStorage.removeItem("user_id");
   };
 
   const handleFieldSelected = (fieldOrObj) => {
-    // 영어: "english", 프로그래밍: { field: "programming", languages: [...] }
     setUserField(fieldOrObj);
   };
 
-  // 분야, 레벨 선택 핸들러 //
   const handleLevelSelected = async (fieldOrObj, level) => {
     if (!userID) {
       console.warn("ID가 확인되지 않습니다. 요청을 중단합니다.");
@@ -142,21 +200,17 @@ function App() {
     setUserLevel(level);
     setFieldSelect(false);
 
-    // DB 저장용: selections에 field와 필요시 languages 포함
     let dbField, dbLanguages;
     if (typeof fieldOrObj === "string") {
       dbField = fieldOrObj;
       dbLanguages = null;
     } else if (typeof fieldOrObj === "object" && fieldOrObj.field === "programming") {
       dbField = "programming";
-      dbLanguages = fieldOrObj.languages; // 배열 (key값)
+      dbLanguages = fieldOrObj.languages;
     }
 
-    // 레벨 분기(테스트/추천)
     if (level === "test") {
-      // -------- [여기서만] userField에 label 변환값을 저장 -----------
       if (typeof fieldOrObj === "object" && fieldOrObj.field === "programming") {
-        // label로 변환
         setUserField({
           ...fieldOrObj,
           languages: fieldOrObj.languages.map(k => KEY_TO_LABEL[k] || k)
@@ -177,7 +231,6 @@ function App() {
       setShowRecords(false);
     }
 
-    // selections 필드에 언어 정보까지 함께 저장(백엔드 필요시 확장)
     try {
       await axios.post("http://localhost:3001/api/save-user-fields", {
         user_id: userID,
@@ -216,10 +269,10 @@ function App() {
     setShowRecords(false);
   };
 
-  //Theme Change Handler << 위치 알아서 바꾸세요 주석지우기 X 호출순서 S,P -> T,S -> handleThemeChange
+  //Theme Change Handler (위치 변경 가능)
   const handleThemeChange = (newTheme) => {
     setTheme(newTheme);
-    localStorage.setItem("edumatrix-theme", newTheme); // 로컬 반영, 서버저장 X
+    localStorage.setItem("edumatrix-theme", newTheme);
 
     axios.post("http://localhost:3001/api/update-theme", {
       user_id: userID,
@@ -239,7 +292,6 @@ function App() {
       setShowSettings(false);
       setShowRecords(false);
     } else if (key === "home") {
-      // 홈으로 이동: 상태만 초기화 (로그인 유지, id 유지)
       setShowDashboard(false);
       setShowRecommend(false);
       setShowLevelTest(false);
@@ -249,8 +301,6 @@ function App() {
       setAuthView(null);
       setUserField(null);
       setUserLevel(null);
-      // setIsLoggedIn(false);  // ← 삭제! 홈 이동 시 로그인 유지
-      // setUserId(null);       // ← 삭제! 홈 이동 시 id 유지
     } else if (key === "settings") {
       setShowSettings(true);
       setShowDashboard(false);
@@ -278,7 +328,6 @@ function App() {
   if (!isLoggedIn && authView === "signup") {
     return (
       <Signup
-        // 회원가입 성공시 신규회원 플래그를 true로 세팅하고 handleLoginSuccess 호출
         onSignup={(userData) => {
           setIsNewUser(true);
           handleLoginSuccess(userData);
@@ -329,7 +378,7 @@ function App() {
             className="back-btn"
             onClick={() => {
               setShowRecords(false);
-              setShowDashboard(true); // 뒤로가기 시 대시보드로 이동
+              setShowDashboard(true);
             }}
             style={{
               marginLeft: 10,
@@ -353,7 +402,6 @@ function App() {
           </button>
         </header>
         <main>
-          {/* onMenuClick prop 전달 */}
           <LearningRecords onMenuClick={handleSidebarMenuClick} />
         </main>
       </div>
@@ -374,7 +422,6 @@ function App() {
           <button className="sidebar-toggle" onClick={() => setLeftOpen(true)}>
             <span role="img" aria-label="메뉴">☰</span>
           </button>
-          {/* 뒤로가기 화살표 */}
           <button
             className="back-btn"
             onClick={handleBackToHome}
@@ -408,7 +455,6 @@ function App() {
 
   // 레벨테스트(퀴즈)
   if (isLoggedIn && showLevelTest) {
-    // userField(문자열 or {field, languages}) 그대로 넘김
     return (
       <LevelTest
         field={userField}
@@ -427,7 +473,7 @@ function App() {
   if (isLoggedIn && showRecommend) {
     return (
       <Recommendation
-        field={userField}   // <--- { field, languages } or "english"
+        field={userField}
         level={userLevel}
         onBack={handleBackToSelectFromRecommend}
         backArrow={backArrow}
@@ -435,7 +481,13 @@ function App() {
           setShowRecommend(false);
           setShowDashboard(true);
         }}
-        onMenuClick={handleSidebarMenuClick} // <-- [핵심] 반드시 직접 전달!
+        onMenuClick={handleSidebarMenuClick}
+        // 추천 일정 수락/진행률 변경/완료/삭제 props 하위 전달
+        schedules={learningSchedules}
+        onAccept={handleAcceptSchedule}
+        onProgressChange={handleProgressChange}
+        onComplete={handleCompleteSchedule}
+        onRemove={handleRemoveSchedule}
       />
     );
   }
@@ -454,7 +506,6 @@ function App() {
           <button className="sidebar-toggle" onClick={() => setLeftOpen(true)}>
             <span role="img" aria-label="메뉴">☰</span>
           </button>
-          {/* 뒤로가기 */}
           <button
             className="back-btn"
             onClick={handleBackToRecommend}
@@ -479,7 +530,14 @@ function App() {
           </button>
         </header>
         <main className="main-content" style={{ marginTop: "2.3rem" }}>
-          <Dashboard />
+          {/* Dashboard에 학습 일정, 상태 관리 props 전달 */}
+          <Dashboard
+            schedules={learningSchedules}
+            onAccept={handleAcceptSchedule}
+            onProgressChange={handleProgressChange}
+            onComplete={handleCompleteSchedule}
+            onRemove={handleRemoveSchedule}
+          />
           <button
             className="login-btn"
             style={{ margin: "2rem auto 0", width: 180, display: "block" }}
@@ -519,7 +577,6 @@ function App() {
             똑똑하고 직관적인 학습 비서와 함께, 성장의 경험을 시작하세요.
           </p>
         </div>
-        {/* 로그인/회원가입 버튼 추가 */}
         {!isLoggedIn && (
           <div style={{ marginTop: "3rem", display: "flex", justifyContent: "center", gap: "1.5rem" }}>
             <button

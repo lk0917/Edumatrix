@@ -19,13 +19,8 @@ function setLocalData(data) {
 }*/
 
 // 시간 포맷 유틸
-function getDateString(date) {
-  const d = date instanceof Date ? date : new Date(date);
-  return `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, "0")}-${d
-    .getDate()
-    .toString()
-    .padStart(2, "0")}`;
-}
+// eslint warning 방지
+// function getDateString(date) { ... } 삭제
 function getTimeString(date) {
   return new Date(date).toLocaleString("ko-KR", {
     timeZone: "Asia/Seoul",
@@ -44,8 +39,8 @@ function LearningRecords({ onMenuClick }) {
   const [rightOpen, setRightOpen] = useState(false);
 
   // 전체 데이터 상태
-    const [categories, setCategories] = useState(["기본"]);
-    const [posts, setPosts] = useState([]);
+  const [categories, setCategories] = useState(["기본"]);
+  const [posts, setPosts] = useState([]);
   const [currentCategory, setCurrentCategory] = useState(categories[0]);
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ title: "", content: "", category: "" });
@@ -65,34 +60,34 @@ function LearningRecords({ onMenuClick }) {
   const [catEditVal, setCatEditVal] = useState("");
 
   // 팝업 외부 클릭 닫기 ref
-    const catMenuRef = useRef(null);
+  const catMenuRef = useRef(null);
 
- //MongoDB 연동 -> TEST후 안되면 주석 처리 후 로컬스토리지 유틸 재적용해주세요.
-    useEffect(() => {
-  const user_id = localStorage.getItem("user_id");
-  if (!user_id) return;
+  // MongoDB 연동 -> TEST후 안되면 주석 처리 후 로컬스토리지 유틸 재적용해주세요.
+  useEffect(() => {
+    const user_id = localStorage.getItem("user_id");
+    if (!user_id) return;
 
-  // 글 목록 불러오기
-  fetch(`http://localhost:3001/api/records/${user_id}`)
-    .then(res => res.json())
-    .then(data => {
-      const formatted = data.map(item => ({
-        id: item._id,
-        title: item.subject,
-        content: item.memo,
-        category: item.category ?? "기본",
-        date: getTimeString(item.date),
-      }));
-      setPosts(formatted);
-    })
-    .catch(err => console.error("MongoDB 글 불러오기 실패:", err));
+    // 글 목록 불러오기
+    fetch(`http://localhost:3001/api/records/${user_id}`)
+      .then(res => res.json())
+      .then(data => {
+        const formatted = data.map(item => ({
+          id: item._id,
+          title: item.subject,
+          content: item.memo,
+          category: item.category ?? "기본",
+          date: getTimeString(item.date),
+        }));
+        setPosts(formatted);
+      })
+      .catch(err => console.error("MongoDB 글 불러오기 실패:", err));
 
-  // 카테고리 목록 불러오기
-  fetch(`http://localhost:3001/api/user-categories/${user_id}`)
-    .then(res => res.json())
-    .then(data => setCategories(data))
-    .catch(err => console.error("MongoDB 카테고리 불러오기 실패:", err));
-}, []);
+    // 카테고리 목록 불러오기
+    fetch(`http://localhost:3001/api/user-categories/${user_id}`)
+      .then(res => res.json())
+      .then(data => setCategories(data))
+      .catch(err => console.error("MongoDB 카테고리 불러오기 실패:", err));
+  }, []);
 
   useEffect(() => {
     const handleClick = (e) => {
@@ -103,79 +98,79 @@ function LearningRecords({ onMenuClick }) {
   }, [catMenuRef, catMenuIdx]);
 
   // 카테고리 추가
-const handleAddCategory = async () => {
-  const trimmed = newCat.trim();
-  if (!trimmed || categories.includes(trimmed)) return;
+  const handleAddCategory = async () => {
+    const trimmed = newCat.trim();
+    if (!trimmed || categories.includes(trimmed)) return;
 
-  const user_id = localStorage.getItem("user_id");
+    const user_id = localStorage.getItem("user_id");
 
-  try {
-    const res = await fetch(`http://localhost:3001/api/user-categories/${user_id}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ newCategory: trimmed })
-    });
-    const updated = await res.json();
-    setCategories(updated);
-    setCurrentCategory(trimmed);
-  } catch (err) {
-    console.error("카테고리 추가 실패:", err);
-  }
+    try {
+      const res = await fetch(`http://localhost:3001/api/user-categories/${user_id}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ newCategory: trimmed })
+      });
+      const updated = await res.json();
+      setCategories(updated);
+      setCurrentCategory(trimmed);
+    } catch (err) {
+      console.error("카테고리 추가 실패:", err);
+    }
 
-  setNewCat("");
-  setShowCatInput(false);
-};
+    setNewCat("");
+    setShowCatInput(false);
+  };
 
   // 카테고리명 변경
-const handleRenameCategory = async (idx) => {
-  const trimmed = catEditVal.trim();
-  const oldCategory = categories[idx];
-  if (!trimmed || categories.includes(trimmed)) return;
+  const handleRenameCategory = async (idx) => {
+    const trimmed = catEditVal.trim();
+    const oldCategory = categories[idx];
+    if (!trimmed || categories.includes(trimmed)) return;
 
-  const user_id = localStorage.getItem("user_id");
+    const user_id = localStorage.getItem("user_id");
 
-  try {
-    const res = await fetch(`http://localhost:3001/api/user-categories/${user_id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ oldCategory, newCategory: trimmed })
-    });
-    const updated = await res.json();
-    setCategories(updated);
-    setPosts(posts.map(p => p.category === oldCategory ? { ...p, category: trimmed } : p));
-    setCurrentCategory(trimmed);
-  } catch (err) {
-    console.error("카테고리명 변경 실패:", err);
-  }
+    try {
+      const res = await fetch(`http://localhost:3001/api/user-categories/${user_id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ oldCategory, newCategory: trimmed })
+      });
+      const updated = await res.json();
+      setCategories(updated);
+      setPosts(posts.map(p => p.category === oldCategory ? { ...p, category: trimmed } : p));
+      setCurrentCategory(trimmed);
+    } catch (err) {
+      console.error("카테고리명 변경 실패:", err);
+    }
 
-  setCatEditIdx(null);
-  setCatMenuIdx(null);
-  setCatEditVal("");
-};
+    setCatEditIdx(null);
+    setCatMenuIdx(null);
+    setCatEditVal("");
+  };
 
   // 카테고리 삭제
   const handleDeleteCategory = async (idx) => {
-  const cat = categories[idx];
-  if (cat === "기본") return alert("기본 카테고리는 삭제할 수 없습니다.");
-  if (posts.some(p => p.category === cat)) return alert("이 카테고리에 글이 있어 삭제할 수 없습니다.");
+    const cat = categories[idx];
+    if (cat === "기본") return alert("기본 카테고리는 삭제할 수 없습니다.");
+    if (posts.some(p => p.category === cat)) return alert("이 카테고리에 글이 있어 삭제할 수 없습니다.");
 
-  const user_id = localStorage.getItem("user_id");
+    const user_id = localStorage.getItem("user_id");
 
-  try {
-  const res = await fetch(`http://localhost:3001/api/user-categories/${user_id}/delete`, {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ targetCategory: cat })
-    });
-    const updated = await res.json();
-    setCategories(updated);
-    setCurrentCategory(updated[0] || "기본");
-  } catch (err) {
-    console.error("카테고리 삭제 실패:", err);
-  }
+    try {
+      const res = await fetch(`http://localhost:3001/api/user-categories/${user_id}/delete`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ targetCategory: cat })
+      });
+      const updated = await res.json();
+      setCategories(updated);
+      setCurrentCategory(updated[0] || "기본");
+    } catch (err) {
+      console.error("카테고리 삭제 실패:", err);
+    }
 
-  setCatMenuIdx(null);
-};
+    setCatMenuIdx(null);
+  };
 
   // 글쓰기 버튼/취소
   const openForm = () => {
@@ -190,49 +185,66 @@ const handleRenameCategory = async (idx) => {
   };
 
   // 글 작성/수정
-    const handlePost = async (e) => {
-        e.preventDefault();
-        const user_id = localStorage.getItem("user_id");
+  const handlePost = async (e) => {
+    e.preventDefault();
+    const user_id = localStorage.getItem("user_id");
 
-        const trimmedTitle = form.title.trim();
-        if (!trimmedTitle || !form.content.trim()) return;
+    const trimmedTitle = form.title.trim();
+    if (!trimmedTitle || !form.content.trim()) return;
 
-        try {
-            await fetch("http://localhost:3001/api/records", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    user_id,
-                    date: new Date(),
-                    subject: form.title,
-                    status: "완료",
-                    memo: form.content,
-                    category: form.category
-                })
-            });
-            window.location.reload(); // 새로고침으로 목록 반영
-        } catch (err) {
-            console.error("기록 추가 실패:", err);
-        }
-    };
+    try {
+      const res = await fetch("http://localhost:3001/api/records", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          user_id,
+          date: new Date(),
+          subject: form.title,
+          status: "완료",
+          memo: form.content,
+          category: form.category
+        })
+      });
 
+      // [중요 수정] window.location.reload() 대신 새 글 정보를 posts 상태에 추가 (로그아웃 현상 방지)
+      // 서버가 새로 등록된 단일 글을 반환해야 함
+      const newPost = await res.json();
+      setPosts(prev => [
+        {
+          id: newPost._id,
+          title: newPost.subject,
+          content: newPost.memo,
+          category: newPost.category ?? "기본",
+          date: getTimeString(newPost.date),
+        },
+        ...prev,
+      ]);
+      setShowForm(false);
+      setForm({ title: "", content: "", category: currentCategory });
+      setEditPostId(null);
+
+      // window.location.reload() 삭제! (로그아웃/새로고침 방지)
+    } catch (err) {
+      console.error("기록 추가 실패:", err);
+    }
+  };
 
   // 글 삭제
   const handleDelete = async (post) => {
-  if (!window.confirm("정말 삭제하시겠습니까?")) return;
+    if (!window.confirm("정말 삭제하시겠습니까?")) return;
 
-  try {
-    await fetch(`http://localhost:3001/api/records/${post.id}`, {
-      method: "DELETE"
-    });
+    try {
+      await fetch(`http://localhost:3001/api/records/${post.id}`, {
+        method: "DELETE"
+      });
 
-    setPosts((prev) => prev.filter((p) => p.id !== post.id));
-    setViewPost(null);
-  } catch (err) {
-    console.error("글 삭제 실패:", err);
-    alert("삭제 중 오류가 발생했습니다.");
-  }
-};
+      setPosts((prev) => prev.filter((p) => p.id !== post.id));
+      setViewPost(null);
+    } catch (err) {
+      console.error("글 삭제 실패:", err);
+      alert("삭제 중 오류가 발생했습니다.");
+    }
+  };
 
   // 글 수정 진입
   const handleEdit = (post) => {
