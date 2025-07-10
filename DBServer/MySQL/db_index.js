@@ -27,3 +27,6 @@ app.listen(PORT, () => {
 const learningRoutes = require("./routes/learning");
 app.use("/api", learningRoutes);
 app.use("/api/user-categories", require("./routes/userCategory"));
+
+const questionRoutes = require("./routes/testQuestions");
+app.use("/api/test-questions", questionRoutes);
